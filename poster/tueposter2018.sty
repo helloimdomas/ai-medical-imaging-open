@@ -1,0 +1,199 @@
+\NeedsTeXFormat{LaTeX2e}
+\def\fileversion{v.1.0}\def\filedate{2018/10/01}
+\ProvidesPackage{tueposter2018}
+          [\filedate\space\fileversion\space  TU/e Scientific Poster 2018]
+\DeclareOption{standardmargins}{\let\narrowmargins\undefined}
+\DeclareOption{narrowmargins}{\def\narrowmargins{\true}}
+\ExecuteOptions{standardmargins}
+\ProcessOptions
+
+\RequirePackage[T1]{fontenc}
+\RequirePackage{graphicx,ifthen,color,pgf,multicol,calc}
+\RequirePackage{amsmath,amssymb,amsthm,caption,ifthen}
+\RequirePackage[charter]{mathdesign}
+\RequirePackage[sfdefault]{noto}
+\RequirePackage[absolute]{textpos}
+
+\RequirePackage[paper=a4paper,text={21cm-1.64cm,20cm},top=8cm]{geometry}
+%\RequirePackage{anyfontsize}
+
+\pagestyle{empty}
+\setlength{\columnsep}{0.8cm}
+
+% TU/e Main Colour
+\definecolor{tuescarlet}{RGB}{200,24,24}       % Scarlet
+\definecolor{tuedarkblue}{RGB}{16,16,115}       % Dark blue (= tuepms2748)
+\definecolor{columnbg}{RGB}{221,227,243}
+
+% The main theme colour: pink
+\definecolor{themecolor}{named}{tuescarlet}
+\definecolor{tuelightgrey}{RGB}{241,239,239}
+\definecolor{tuemultibranding}{gray}{0.4}
+% The old TU/e colors.
+% Main Colours
+  \definecolor{tuepmswarmred}{rgb}{0.969,0.192,0.192}       % warm red
+  \definecolor{tuepmsprocesscyan}{rgb}{0.000,0.635,0.871}   % cyan
+  \definecolor{tuepms206}{rgb}{0.839,0.000,0.290}           % pink
+  \definecolor{tuepms300}{rgb}{0.000,0.400,0.800}           % blue
+  \definecolor{tuepms226}{rgb}{0.839,0.000,0.482}           % a more 'pinkish, puplish' pink
+  \definecolor{tuepms253}{rgb}{0.678,0.125,0.678}           % purple
+  \definecolor{tuepms2748}{rgb}{0.063,0.063,0.451}          % dark blue
+% Support Colours
+  \definecolor{tuepms137}{rgb}{1.000,0.604,0.000}           % orange
+  \definecolor{tuepmsyellow012}{rgb}{1.000,0.867,0.000}     % yellow
+  \definecolor{tuepms396}{rgb}{0.808,0.875,0.000}           % yellow-greenish
+  \definecolor{tuepms375}{rgb}{0.518,0.824,0.000}           % light green
+  \definecolor{tuepmsgreen}{rgb}{0.000,0.675,0.510}         % green
+  \definecolor{tuepms3135}{rgb}{0.000,0.573,0.710}          % another type of blue
+
+% Alternative, more common, names for some of these colours:
+  \definecolor{tuewarmred}{named}{tuepmswarmred}
+  \definecolor{tuered}{named}{tuepmswarmred}
+  \definecolor{tueprocesscyan}{named}{tuepmsprocesscyan}
+  \definecolor{tuecyan}{named}{tuepmsprocesscyan}
+  \definecolor{tuepink}{named}{tuepms206}
+  \definecolor{tuecorporate}{named}{tuepms206}
+  \definecolor{tueblue}{named}{tuepms300}
+  \definecolor{tueorange}{named}{tuepms137}
+  \definecolor{tueyellow}{named}{tuepmsyellow012}
+  \definecolor{tuelightgreen}{named}{tuepms375}
+  \definecolor{tuegreen}{named}{tuepmsgreen}
+
+
+
+% Draw the logo
+\newcommand{\dept}{}
+\newcommand{\department}[1]{\renewcommand{\dept}{#1}}
+
+\newcommand{\companylogo}{}
+\newcommand{\companylogosizemultiplicationfactor}{1}
+\definecolor{companymaincolor}{rgb}{0,0,0}
+\newlength{\basecompanylogowidth}
+\newcommand{\company}[2]{%
+\renewcommand{\companylogo}{#1}%
+\definecolor{companymaincolor}{named}{#2}
+%\definecolor{themecolor}{named}{#2}
+}
+
+
+\setlength{\unitlength}{1cm}
+\setlength{\TPHorizModule}{1cm}%
+ \setlength{\TPVertModule}{1cm}%
+\newlength{\logobarheight}
+\newlength{\titlebarheight}
+\newlength{\titletopmargin}
+\newlength{\logoheight}
+\newlength{\companylogoheight}
+\newlength{\marginx}
+\newlength{\marginy}
+\newlength{\logox}
+\newlength{\logoy}
+
+\ifx\narrowmargins\undefined  % Standard margins
+\setlength{\logobarheight}{3.7cm}
+\setlength{\titlebarheight}{3.8cm}
+\setlength{\logoheight}{2.3cm}
+\setlength{\companylogoheight}{1.8cm}
+\setlength{\marginx}{1.7cm}
+\setlength{\marginy}{1.6cm}
+\setlength{\logox}{10mm}
+\setlength{\logoy}{\logobarheight/2+5mm}
+\setlength{\titletopmargin}{0.2cm}
+\else % Narrow margins
+\setlength{\logobarheight}{2.9cm}
+\setlength{\titlebarheight}{4.6cm}
+\setlength{\logoheight}{2.3cm}
+\setlength{\companylogoheight}{1.8cm}
+\setlength{\marginx}{0.82cm}
+\setlength{\marginy}{0.6cm}
+\setlength{\logox}{1mm}
+\setlength{\logoy}{\logobarheight/2}
+\setlength{\titletopmargin}{0.5cm}
+\fi
+\geometry{text={21cm-2\marginx-0.02cm,20cm}}
+
+
+\newcommand{\inserttitle}{}
+\newcommand{\insertsubtitle}{}
+\newcommand{\insertauthors}{}
+
+\renewcommand{\title}[1]{\renewcommand{\inserttitle}{#1}}
+\newcommand{\subtitle}[1]{\renewcommand{\insertsubtitle}{#1}}
+\newcommand{\authors}[1]{\renewcommand{\insertauthors}{#1}}
+
+\renewcommand{\maketitle}{%
+\begin{textblock}{21}(0,0)
+\noindent%
+\begin{pgfpicture}{0cm}{0cm}{\paperwidth}{\paperheight}
+        \pgfsetcolor{themecolor}
+        \pgfpathmoveto{\pgfpoint{0cm}{\paperheight-\titlebarheight-\logobarheight}}
+        \pgfpathlineto{\pgfpoint{0cm}{\paperheight-\logobarheight}}
+        \pgfpathlineto{\pgfpoint{\paperwidth}{\paperheight-\logobarheight}}
+        \pgfpathlineto{\pgfpoint{\paperwidth}{\paperheight-\titlebarheight-\logobarheight}}
+        \pgfusepath{fill}
+        \pgfsetfillopacity{1.0}
+
+        \ifthenelse{\equal{\companylogo}{}}{
+        % TU/e logo
+        \pgftext[at=\pgfpoint{\paperwidth-\logox}{\paperheight-\logoy},right,center]{%
+          \includegraphics[height=\logoheight]{TUe-logo-descriptor-line-scarlet-rgb}
+        }
+        } {
+        \setlength{\basecompanylogowidth}{1.01\companylogoheight}
+        \pgftext[at=\pgfpoint{\paperwidth-\logox-7.0mm}{\paperheight-\logoy-2mm},right,center]{%
+          \setlength{\fboxsep}{0cm}%
+          \parbox[b][1.01\companylogoheight][c]{0.8\paperwidth}{\raggedleft%
+            \includegraphics[width=\companylogosizemultiplicationfactor\basecompanylogowidth]{\companylogo}%
+          }\ %
+          \colorbox{companymaincolor}{%
+          \includegraphics[height=\companylogoheight]{TUe-logo-descriptor-stack-white}%
+          }
+        }
+        }
+
+        % Title
+        \color{white}
+        \pgftext[at=\pgfpoint{\marginx}{\paperheight-\logobarheight-\titletopmargin},left,top]{%
+          \begin{minipage}[t][0.9\titlebarheight][t]{0.95\paperwidth}
+          \color{white}\normalfont\fontsize{24}{26}\selectfont\bfseries\raggedright%
+          \inserttitle \mbox{} \\[1ex]
+          \ifthenelse{\equal{\insertsubtitle}{}}{\relax}{
+          \normalfont\fontsize{16}{16}\selectfont\bfseries\raggedright%
+          \insertsubtitle\\[3ex]}
+          \normalfont\fontsize{14}{14}\selectfont\mdseries\raggedright
+          \insertauthors
+          \end{minipage}
+        }%
+
+
+
+%        \pgfsetcolor{columnbg}
+%        \pgfpathmoveto{\pgfpoint{\marginx}{\paperheight-\logobarheight-\titlebarheight-0.5cm}}
+%        \pgfpathlineto{\pgfpoint{\paperwidth/2-\columnsep/2}{\paperheight-\logobarheight-\titlebarheight-0.5cm}}
+%        \pgfpathlineto{\pgfpoint{\paperwidth/2-\columnsep/2}{2\marginy+0.8cm}}
+%        \pgfpathlineto{\pgfpoint{\marginx}{2\marginy+0.8cm}}
+%        \pgfusepath{fill}
+%
+%        \pgfpathmoveto{\pgfpoint{\paperwidth-\marginx}{\paperheight-\logobarheight-\titlebarheight-0.5cm}}
+%        \pgfpathlineto{\pgfpoint{\paperwidth/2+\columnsep/2}{\paperheight-\logobarheight-\titlebarheight-0.5cm}}
+%        \pgfpathlineto{\pgfpoint{\paperwidth/2+\columnsep/2}{2\marginy+0.8cm}}
+%        \pgfpathlineto{\pgfpoint{\paperwidth-\marginx}{2\marginy+0.8cm}}
+%        \pgfusepath{fill}
+%
+%        \pgfpathmoveto{\pgfpoint{\marginx}{\marginy}}
+%        \pgfpathlineto{\pgfpoint{\marginx}{\marginy+0.8cm}}
+%        \pgfpathlineto{\pgfpoint{\paperwidth-\marginx}{\marginy+0.8cm}}
+%        \pgfpathlineto{\pgfpoint{\paperwidth-\marginx}{\marginy}}
+%        \pgfusepath{fill}
+
+        % Department or Service
+        \pgftext[at=\pgfpoint{\marginx}{\marginy+0.4cm},left,center]{%
+                    \color{black}\normalfont\fontsize{10}{10}\selectfont\bfseries%
+        \dept
+        }
+\end{pgfpicture}
+
+\end{textblock}
+}
+
+\endinput

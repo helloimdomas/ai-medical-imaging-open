@@ -1,0 +1,61 @@
+\documentclass[a4paper,10pt]{article}
+\usepackage{tueposter2018}
+%\usepackage[narrowmargins]{tueposter2018}
+\usepackage[english]{babel}
+
+
+\title{Sample Scientific Poster}
+\subtitle{A subtitle}
+\authors{Author 1, Author 2, Author 3}
+
+\department{Department or Service}
+
+%%% Use this if you have company logos:
+%\definecolor{asmlblue}{HTML}{1f3f7d}     % this should be the company's main colour
+%\company{asmllogo}{asmlblue}
+%\renewcommand{\companylogosizemultiplicationfactor}{1}
+
+
+\begin{document}
+\maketitle
+
+\begin{multicols}{2}
+\section*{Sample scientific poster}
+
+Some important remarks:
+\begin{itemize}
+\item Load the package \verb|tueposter2018| to create scientific poster.
+\item Note that you can use the \verb|narrowmargins| options to specify narrower margins.
+\item You cannot use a standard figure environment. Instead, just put pictures in a \verb|center| environment and use
+\begin{verbatim}
+\captionof{figure}{...}
+\end{verbatim}
+to specify a caption. See the example below.
+\item If you want to use other logos, besides the TU/e logo, please stick to the TU/e guidelines regarding the usage of company logos. To facilitate this, you can check out the \LaTeX\ source code of this document to see an example of how you can include a company logo. You need to specify the company's main colour, because it will be used as a background for the TU/e logo.
+\item You need the \verb|noto| font for this poster. This is available in the standard \LaTeX\ package \verb|noto|.
+\item Note that the poster size is A4, but since everything is scalable, you can print it in any paper size. Just make sure that your images are \emph{scalable} or of a \emph{high resolution}, so they still look good when scaled to a larger size.
+\end{itemize}
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Id venenatis a condimentum vitae sapien pellentesque habitant. Enim ut tellus elementum sagittis vitae et leo duis. Dolor sit amet consectetur adipiscing elit duis tristique sollicitudin nibh. Ipsum a arcu cursus vitae congue mauris. Pulvinar proin gravida hendrerit lectus. Arcu odio ut sem nulla pharetra. Non arcu risus quis varius quam quisque id diam. Volutpat diam ut venenatis tellus. Nec dui nunc mattis enim ut tellus elementum. Velit scelerisque in dictum non. Praesent semper feugiat nibh sed pulvinar proin gravida hendrerit lectus. Sed vulputate mi sit amet mauris commodo quis imperdiet  in Figure~\ref{fig:logo}.
+
+\begin{center}
+\colorbox{tueblue}{\includegraphics[width=0.6\linewidth]{TUe-logo-descriptor-stack-white}}
+\captionof{figure}{The new TU/e logo. \label{fig:logo}}
+\end{center}
+
+
+Sit amet facilisis magna etiam tempor orci eu lobortis Boon~\cite{boonposter18}. Orci nulla pellentesque dignissim enim sit amet venenatis. Non enim praesent elementum facilisis leo. Ipsum a arcu cursus vitae congue. Faucibus in ornare quam viverra orci. Tristique sollicitudin nibh sit amet commodo nulla facilisi nullam vehicula. Ac felis donec et odio pellentesque diam volutpat. Nisl nunc mi ipsum faucibus vitae. Aliquet eget sit amet tellus cras adipiscing enim. Auctor elit sed vulputate mi sit amet mauris commodo quis. Enim eu turpis egestas pretium aenean pharetra. Quam id leo in vitae turpis massa. Neque gravida in fermentum et sollicitudin ac orci phasellus. Porta non pulvinar neque laoreet suspendisse. Arcu cursus vitae congue mauris rhoncus aenean vel elit.
+
+
+
+\begin{thebibliography}{99}
+\bibitem{boonposter18}
+M.A.A. Boon (2018).
+How to create a scientific poster in \LaTeX.
+{\it TU/e journal of scientific posters} {\bf 37},
+466--478.
+\end{thebibliography}
+\end{multicols}
+
+\end{document}
+

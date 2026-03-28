@@ -1,0 +1,63 @@
+{
+  "model": "BiomedCLIP-PubMedBERT_256-vit_base_patch16_224",
+  "embedding_dim": 512,
+  "n_samples": 920,
+  "zero_shot": {
+    "accuracy": 0.6880434782608695,
+    "sensitivity": 0.8122977346278317,
+    "specificity": 0.4337748344370861
+  },
+  "supervised": {
+    "LogisticRegression": {
+      "cv_accuracy": 0.7377551020408164,
+      "cv_std": 0.03469387755102041,
+      "test_accuracy": 0.7010869565217391,
+      "sensitivity": 0.7419354838709677,
+      "specificity": 0.6166666666666667,
+      "confusion_matrix": [
+        [
+          37,
+          23
+        ],
+        [
+          32,
+          92
+        ]
+      ]
+    },
+    "SVM (RBF)": {
+      "cv_accuracy": 0.7540448611877183,
+      "cv_std": 0.035513435954835866,
+      "test_accuracy": 0.7119565217391305,
+      "sensitivity": 0.75,
+      "specificity": 0.6333333333333333,
+      "confusion_matrix": [
+        [
+          38,
+          22
+        ],
+        [
+          31,
+          93
+        ]
+      ]
+    },
+    "RandomForest": {
+      "cv_accuracy": 0.7296010296010296,
+      "cv_std": 0.021464081052260008,
+      "test_accuracy": 0.7391304347826086,
+      "sensitivity": 0.9193548387096774,
+      "specificity": 0.36666666666666664,
+      "confusion_matrix": [
+        [
+          22,
+          38
+        ],
+        [
+          10,
+          114
+        ]
+      ]
+    }
+  }
+}
