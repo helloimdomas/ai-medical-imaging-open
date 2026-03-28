@@ -2,6 +2,37 @@
 
 This directory contains a complete pipeline for melanoma vs nevus classification using the Open-MELON dataset. The pipeline compares two approaches: a vision-language model (MedGemma) that generates descriptive captions, and a visual embedding model (BiomedCLIP) that extracts image features for classification.
 
+## Reproducible Environment
+
+This repository uses `uv` for dependency and Python version management. The
+project keeps the current flat script layout, so scripts are still run directly
+from the repository root.
+
+Initial setup:
+
+```bash
+uv python install 3.11
+uv sync --extra dev
+```
+
+Run the existing scripts through `uv`:
+
+```bash
+uv run python indices/create_indices.py
+uv run python clean_captions.py
+uv run python pipeline.py --prompt-id binary_choice
+uv run python biomedclip_classifier.py
+uv run python balanced_accuracy.py
+```
+
+If you only need a subset of the workflow, you can install a smaller extra:
+
+```bash
+uv sync
+uv sync --extra captioning
+uv sync --extra embeddings
+```
+
 ## Overview
 
 The goal is to classify histopathology images as either melanoma (malignant) or nevus (benign). The Open-MELON-VL-2.5K dataset on HuggingFace contains 2,499 total images covering various conditions. Since the dataset does not have explicit diagnosis labels, we use keyword matching on the captions to identify melanoma and nevus cases. This filtering produces 920 usable images (618 melanoma, 302 nevus) for our binary classification benchmark.
@@ -52,7 +83,7 @@ This caption mentions both "nevus cells" and "melanoma" because it describes a c
 
 To regenerate the indices:
 ```bash
-python indices/create_indices.py
+uv run python indices/create_indices.py
 ```
 
 ### indices/melanoma_nevus_indices.json

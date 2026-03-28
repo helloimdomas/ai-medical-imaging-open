@@ -1,5 +1,24 @@
 # Open Project: Exploratory Research in Vision-Language Models
 
+## Local Reproducibility
+
+This repository uses `uv` for environment management.
+
+```bash
+uv python install 3.11
+uv sync --extra dev
+```
+
+Run scripts from the repository root:
+
+```bash
+uv run python indices/create_indices.py
+uv run python clean_captions.py
+uv run python pipeline.py --prompt-id binary_choice
+uv run python biomedclip_classifier.py
+uv run python balanced_accuracy.py
+```
+
 ## 1. How to Select a Topic
 * **The topic should be on vision-language models and their applications in medical imaging.**
 * **Question First:** Do not start by trying to improve the accuracy or performance for some task, this should not be your goal. Start with a specific question, for example, about a method, model behavior, or data subset. It can, however, be that the question is if a specific method is better than another for a specific task (i.e. "Does method X outperform method Y?").
