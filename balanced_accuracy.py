@@ -11,13 +11,11 @@ Usage:
 """
 
 import json
-import random
 import numpy as np
 from pathlib import Path
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.svm import SVC
-from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import accuracy_score
+
+from train_embedding_classifier import get_classifiers
 
 SCRIPT_DIR = Path(__file__).parent
 RANDOM_SEED = 42
@@ -25,9 +23,16 @@ N_TRIALS = 10  # Number of random sampling trials to average
 
 def load_data():
     """Load embeddings and captions."""
-    # Load BiomedCLIP embeddings
-    embeddings = np.load(SCRIPT_DIR / "embeddings" / "biomedclip_embeddings.npz")
-    X, y, indices = embeddings['X'], embeddings['y'], embeddings['indices']
+    biomedclip = np.load(SCRIPT_DIR / "embeddings" / "biomedclip_embeddings.npz")
+    medsiglip = np.load(SCRIPT_DIR / "embeddings" / "medsiglip_embeddings.npz")
+
+    X_biomedclip = biomedclip["X"]
+    y = biomedclip["y"]
+    indices = biomedclip["indices"]
+    X_medsiglip = medsiglip["X"]
+
+    if not np.array_equal(y, medsiglip["y"]) or not np.array_equal(indices, medsiglip["indices"]):
+        raise ValueError("BiomedCLIP and MedSigLIP embeddings do not share the same labels/indices")
     
     # Load MedGemma predictions
     medgemma_preds = {}
@@ -52,7 +57,7 @@ def load_data():
             
             medgemma_preds[entry["index"]] = pred
     
-    return X, y, indices, medgemma_preds
+    return X_biomedclip, X_medsiglip, y, indices, medgemma_preds
 
 
 def balanced_sample(X, y, indices, rng):
@@ -78,7 +83,7 @@ def balanced_sample(X, y, indices, rng):
 def evaluate_balanced(n_trials=N_TRIALS):
     """Evaluate with balanced sampling over multiple trials."""
     print("Loading data...")
-    X, y, indices, medgemma_preds = load_data()
+    X_biomedclip, X_medsiglip, y, indices, medgemma_preds = load_data()
     
     print(f"\nOriginal distribution: {sum(y == 1)} melanoma, {sum(y == 0)} nevus")
     
@@ -88,13 +93,17 @@ def evaluate_balanced(n_trials=N_TRIALS):
         "BiomedCLIP + LogReg": [],
         "BiomedCLIP + SVM": [],
         "BiomedCLIP + RandomForest": [],
+        "MedSigLIP + LogReg": [],
+        "MedSigLIP + SVM": [],
+        "MedSigLIP + RandomForest": [],
     }
     
     for trial in range(n_trials):
         rng = np.random.default_rng(RANDOM_SEED + trial)
         
         # Balanced sample
-        X_bal, y_bal, idx_bal = balanced_sample(X, y, indices, rng)
+        X_bio_bal, y_bal, idx_bal = balanced_sample(X_biomedclip, y, indices, rng)
+        X_med_bal, _, _ = balanced_sample(X_medsiglip, y, indices, np.random.default_rng(RANDOM_SEED + trial))
         
         # Split 80/20
         n = len(y_bal)
@@ -104,7 +113,8 @@ def evaluate_balanced(n_trials=N_TRIALS):
         train_idx = perm[:n_train]
         test_idx = perm[n_train:]
         
-        X_train, X_test = X_bal[train_idx], X_bal[test_idx]
+        X_bio_train, X_bio_test = X_bio_bal[train_idx], X_bio_bal[test_idx]
+        X_med_train, X_med_test = X_med_bal[train_idx], X_med_bal[test_idx]
         y_train, y_test = y_bal[train_idx], y_bal[test_idx]
         idx_test = idx_bal[test_idx]
         
@@ -113,16 +123,20 @@ def evaluate_balanced(n_trials=N_TRIALS):
         mg_acc = accuracy_score(y_test, mg_preds)
         results["MedGemma (binary_choice)"].append(mg_acc)
         
-        # BiomedCLIP classifiers
-        for name, clf in [
-            ("BiomedCLIP + LogReg", LogisticRegression(max_iter=1000, class_weight="balanced")),
-            ("BiomedCLIP + SVM", SVC(kernel="rbf", class_weight="balanced")),
-            ("BiomedCLIP + RandomForest", RandomForestClassifier(n_estimators=100, class_weight="balanced", random_state=42)),
-        ]:
-            clf.fit(X_train, y_train)
-            y_pred = clf.predict(X_test)
+        for name, clf in get_classifiers(random_state=42).items():
+            biomedclip_name = name.replace("LogisticRegression", "LogReg")
+            biomedclip_name = f"BiomedCLIP + {biomedclip_name.replace('SVM (RBF)', 'SVM')}"
+            medsiglip_name = biomedclip_name.replace("BiomedCLIP", "MedSigLIP")
+
+            clf.fit(X_bio_train, y_train)
+            y_pred = clf.predict(X_bio_test)
             acc = accuracy_score(y_test, y_pred)
-            results[name].append(acc)
+            results[biomedclip_name].append(acc)
+
+            clf.fit(X_med_train, y_train)
+            y_pred = clf.predict(X_med_test)
+            acc = accuracy_score(y_test, y_pred)
+            results[medsiglip_name].append(acc)
     
     # Print results
     print("\n" + "=" * 60)
@@ -159,6 +173,17 @@ def evaluate_balanced(n_trials=N_TRIALS):
         print(f"BiomedCLIP RF original:  {orig_rf_acc:.1f}%")
         print(f"BiomedCLIP RF balanced:  {summary['BiomedCLIP + RandomForest']['mean']:.1f}%")
         print(f"  Difference: {summary['BiomedCLIP + RandomForest']['mean'] - orig_rf_acc:+.1f}%")
+    except:
+        pass
+
+    try:
+        with open(SCRIPT_DIR / "results" / "medsiglip_results.json") as f:
+            orig_results = json.load(f)
+        orig_svm_acc = orig_results["supervised"]["SVM (RBF)"]["test_accuracy"] * 100
+        print()
+        print(f"MedSigLIP SVM original:   {orig_svm_acc:.1f}%")
+        print(f"MedSigLIP SVM balanced:   {summary['MedSigLIP + SVM']['mean']:.1f}%")
+        print(f"  Difference: {summary['MedSigLIP + SVM']['mean'] - orig_svm_acc:+.1f}%")
     except:
         pass
     

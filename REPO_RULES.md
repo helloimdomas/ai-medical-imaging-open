@@ -2,6 +2,10 @@
 
 This directory contains a complete pipeline for melanoma vs nevus classification using the Open-MELON dataset. The pipeline compares two approaches: a vision-language model (MedGemma) that generates descriptive captions, and a visual embedding model (BiomedCLIP) that extracts image features for classification.
 
+## Style Guidelines
+
+- **No emojis** in code, documentation, or comments. Use plain text markers like `[OK]`, `[ERROR]`, `[WARNING]` for status messages.
+
 ## Reproducible Environment
 
 This repository uses `uv` for dependency and Python version management. The
@@ -21,7 +25,10 @@ Run the existing scripts through `uv`:
 uv run python indices/create_indices.py
 uv run python clean_captions.py
 uv run python pipeline.py --prompt-id binary_choice
-uv run python biomedclip_classifier.py
+uv run --extra embeddings python biomedclip_embeddings.py
+uv run --extra embeddings --env-file .env python medsiglip_embeddings.py
+uv run python train_embedding_classifier.py --embeddings-path embeddings/biomedclip_embeddings.npz --model-name BiomedCLIP-PubMedBERT_256-vit_base_patch16_224 --results-path results/biomedclip_results.json
+uv run --extra embeddings python biomedclip_classifier.py
 uv run python balanced_accuracy.py
 ```
 
@@ -45,7 +52,10 @@ The pipeline works in several stages. First, we run a script that scans all capt
 open/
 ├── pipeline.py              # Main caption generation and evaluation pipeline
 ├── clean_captions.py        # Script to clean original captions via Gemini API
-├── biomedclip_classifier.py # BiomedCLIP embedding extraction and classification
+├── biomedclip_embeddings.py # BiomedCLIP embedding extraction
+├── medsiglip_embeddings.py  # MedSigLIP embedding extraction
+├── train_embedding_classifier.py # Shared classifier training on cached embeddings
+├── biomedclip_classifier.py # Compatibility wrapper for the original BiomedCLIP baseline
 ├── configs/
 │   └── prompts.yaml         # Prompt configurations for MedGemma
 ├── indices/
@@ -60,7 +70,8 @@ open/
 │   ├── binary_choice/summary.json   # Evaluation results for binary choice
 │   └── biomedclip_results.json      # BiomedCLIP classification results
 └── embeddings/
-    └── biomedclip_embeddings.npz    # Cached BiomedCLIP embeddings
+    ├── biomedclip_embeddings.npz    # Cached BiomedCLIP embeddings
+    └── medsiglip_embeddings.npz     # Cached MedSigLIP embeddings
 ```
 
 

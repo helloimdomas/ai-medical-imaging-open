@@ -15,7 +15,10 @@ Run scripts from the repository root:
 uv run python indices/create_indices.py
 uv run python clean_captions.py
 uv run python pipeline.py --prompt-id binary_choice
-uv run python biomedclip_classifier.py
+uv run --extra embeddings python biomedclip_embeddings.py
+uv run --extra embeddings --env-file .env python medsiglip_embeddings.py
+uv run python train_embedding_classifier.py --embeddings-path embeddings/biomedclip_embeddings.npz --model-name BiomedCLIP-PubMedBERT_256-vit_base_patch16_224 --results-path results/biomedclip_results.json
+uv run --extra embeddings python biomedclip_classifier.py
 uv run python balanced_accuracy.py
 ```
 
