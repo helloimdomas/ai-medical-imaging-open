@@ -1,0 +1,35 @@
+{
+  "n_trials": 10,
+  "samples_per_class": 263,
+  "sampling_strategy": "all_benign_plus_equal_random_melanoma",
+  "balanced_results": {
+    "MedGemma (binary_choice)": {
+      "mean": 52.16981132075471,
+      "std": 3.605946198795545
+    },
+    "BiomedCLIP + LogReg": {
+      "mean": 69.71698113207547,
+      "std": 3.2255322636375023
+    },
+    "BiomedCLIP + SVM": {
+      "mean": 72.0754716981132,
+      "std": 3.8713744393741893
+    },
+    "BiomedCLIP + RandomForest": {
+      "mean": 71.60377358490567,
+      "std": 2.5818739968686835
+    },
+    "MedSigLIP + LogReg": {
+      "mean": 72.35849056603773,
+      "std": 3.6305436613007314
+    },
+    "MedSigLIP + SVM": {
+      "mean": 76.41509433962264,
+      "std": 4.3641635872529765
+    },
+    "MedSigLIP + RandomForest": {
+      "mean": 73.11320754716981,
+      "std": 4.759244624765829
+    }
+  }
+}

@@ -21,6 +21,9 @@ from train_embedding_classifier import filter_labeled_embeddings, get_classifier
 SCRIPT_DIR = Path(__file__).parent
 RANDOM_SEED = 42
 N_TRIALS = 10  # Number of random sampling trials to average
+LABELS_PATH = SCRIPT_DIR / "captions" / "captions_cleaned_labeled.jsonl"
+INCLUDE_SPITZ_AS_NEVUS = True
+OUTPUT_PATH = SCRIPT_DIR / "results" / "balanced_accuracy.json"
 
 def load_data():
     """Load embeddings and captions."""
@@ -35,8 +38,8 @@ def load_data():
         raise ValueError("BiomedCLIP and MedSigLIP embeddings do not share the same indices")
 
     label_by_index, diagnosis_by_index, _ = load_label_map(
-        SCRIPT_DIR / "captions" / "captions_cleaned_labeled.jsonl",
-        include_spitz_as_nevus=True,
+        LABELS_PATH,
+        include_spitz_as_nevus=INCLUDE_SPITZ_AS_NEVUS,
     )
     X_biomedclip, y, indices, _ = filter_labeled_embeddings(X_biomedclip, indices, label_by_index, diagnosis_by_index)
     X_medsiglip, _, medsiglip_indices, _ = filter_labeled_embeddings(X_medsiglip, medsiglip["indices"], label_by_index, diagnosis_by_index)
@@ -96,7 +99,8 @@ def evaluate_balanced(n_trials=N_TRIALS):
     print("Loading data...")
     X_biomedclip, X_medsiglip, y, indices, medgemma_preds = load_data()
     
-    print(f"\nOriginal distribution: {sum(y == 1)} melanoma, {sum(y == 0)} benign (nevus + Spitz)")
+    benign_label = "benign (nevus + Spitz)" if INCLUDE_SPITZ_AS_NEVUS else "benign (nevus only)"
+    print(f"\nOriginal distribution: {sum(y == 1)} melanoma, {sum(y == 0)} {benign_label}")
     
     # Store results across trials
     results = {
@@ -206,13 +210,26 @@ def evaluate_balanced(n_trials=N_TRIALS):
         "balanced_results": summary,
     }
     
-    with open(SCRIPT_DIR / "results" / "balanced_accuracy.json", "w") as f:
+    with open(OUTPUT_PATH, "w") as f:
         json.dump(output, f, indent=2)
     
-    print(f"\nResults saved to: {SCRIPT_DIR / 'results' / 'balanced_accuracy.json'}")
+    print(f"\nResults saved to: {OUTPUT_PATH}")
     
     return summary
 
 
 if __name__ == "__main__":
-    evaluate_balanced()
+    import argparse
+
+    parser = argparse.ArgumentParser(description="Evaluate with all benign + matched melanoma sampling")
+    parser.add_argument("--labels-path", default=str(SCRIPT_DIR / "captions" / "captions_cleaned_labeled.jsonl"))
+    parser.add_argument("--exclude-spitz", action="store_true", help="Exclude SPITZ_TUMOR from the benign class")
+    parser.add_argument("--n-trials", type=int, default=N_TRIALS)
+    parser.add_argument("--output", default=str(SCRIPT_DIR / "results" / "balanced_accuracy.json"))
+    args = parser.parse_args()
+
+    LABELS_PATH = Path(args.labels_path)
+    INCLUDE_SPITZ_AS_NEVUS = not args.exclude_spitz
+    OUTPUT_PATH = Path(args.output)
+
+    summary = evaluate_balanced(n_trials=args.n_trials)

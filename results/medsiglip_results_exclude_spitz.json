@@ -1,0 +1,65 @@
+{
+  "model": "MedSigLIP-448",
+  "embedding_dim": 1152,
+  "n_samples": 860,
+  "supervised": {
+    "LogisticRegression": {
+      "cv_accuracy": 0.6992066010790225,
+      "cv_std": 0.028506698468301443,
+      "test_accuracy": 0.7732558139534884,
+      "sensitivity": 0.773109243697479,
+      "specificity": 0.7735849056603774,
+      "confusion_matrix": [
+        [
+          41,
+          12
+        ],
+        [
+          27,
+          92
+        ]
+      ]
+    },
+    "SVM (RBF)": {
+      "cv_accuracy": 0.7616735427906484,
+      "cv_std": 0.029999953726054265,
+      "test_accuracy": 0.8546511627906976,
+      "sensitivity": 0.8571428571428571,
+      "specificity": 0.8490566037735849,
+      "confusion_matrix": [
+        [
+          45,
+          8
+        ],
+        [
+          17,
+          102
+        ]
+      ]
+    },
+    "RandomForest": {
+      "cv_accuracy": 0.7543848513699355,
+      "cv_std": 0.031789608726908045,
+      "test_accuracy": 0.7790697674418605,
+      "sensitivity": 0.9663865546218487,
+      "specificity": 0.3584905660377358,
+      "confusion_matrix": [
+        [
+          19,
+          34
+        ],
+        [
+          4,
+          115
+        ]
+      ]
+    }
+  },
+  "labels_path": "/Users/d/Documents/ai-medical-imaging-open/captions/captions_cleaned_labeled.jsonl",
+  "label_counts": {
+    "MELANOMA": 597,
+    "NEVUS": 263,
+    "SPITZ_TUMOR": 0
+  },
+  "spitz_treated_as_benign": false
+}

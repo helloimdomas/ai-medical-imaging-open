@@ -1,0 +1,1070 @@
+{
+  "input_path": "/Users/d/Documents/ai-medical-imaging-open/results/svm_failure_comparison.json",
+  "themes": {
+    "acral_or_lentiginous": [
+      "\\bacral\\b",
+      "lentigin",
+      "\\bmatrix\\b",
+      "\\bnail\\b",
+      "\\bpalm\\b",
+      "\\bsole\\b"
+    ],
+    "mucosal_or_special_site": [
+      "vulvar",
+      "conjunct",
+      "eyelid",
+      "buccal",
+      "\\boral\\b",
+      "mucosa",
+      "labia",
+      "mucosal"
+    ],
+    "nodal_or_metastatic": [
+      "sentinel lymph node",
+      "\\blymph node\\b",
+      "metast",
+      "\\bspleen\\b"
+    ],
+    "spitz_related": [
+      "\\bspitz\\b",
+      "alk fusion"
+    ],
+    "blue_nevus_related": [
+      "blue nevus",
+      "deep penetrating nevus",
+      "pigmented epithelioid",
+      "dumbbell-shaped"
+    ],
+    "in_situ_or_lentigo_maligna": [
+      "in situ",
+      "lentigo maligna",
+      "\\blmm\\b"
+    ],
+    "atypical_or_dysplastic_nevus_context": [
+      "dysplastic nevus",
+      "atypical cell nodule",
+      "atypical features",
+      "severe atypia",
+      "moderate to severe atypia"
+    ],
+    "spindle_or_desmoplastic": [
+      "spindle",
+      "desmoplastic"
+    ],
+    "pigment_heavy": [
+      "heavily pigmented",
+      "melanin",
+      "pigment",
+      "melanoph"
+    ],
+    "regression_or_inflammation": [
+      "regression",
+      "inflamm",
+      "melanophages"
+    ]
+  },
+  "buckets": {
+    "both_wrong": {
+      "count": 35,
+      "true_label_counts": {
+        "benign": 16,
+        "melanoma": 19
+      },
+      "diagnosis_counts": {
+        "NEVUS": 13,
+        "MELANOMA": 19,
+        "SPITZ_TUMOR": 3
+      },
+      "fig_quality_counts": {
+        "low_quality": 16,
+        "high_quality": 19
+      },
+      "theme_counts": {
+        "pigment_heavy": 10,
+        "in_situ_or_lentigo_maligna": 8,
+        "spindle_or_desmoplastic": 8,
+        "mucosal_or_special_site": 8,
+        "regression_or_inflammation": 5,
+        "atypical_or_dysplastic_nevus_context": 5,
+        "blue_nevus_related": 5,
+        "acral_or_lentiginous": 4,
+        "nodal_or_metastatic": 3,
+        "spitz_related": 3
+      },
+      "theme_percentages": {
+        "pigment_heavy": 28.6,
+        "in_situ_or_lentigo_maligna": 22.9,
+        "spindle_or_desmoplastic": 22.9,
+        "mucosal_or_special_site": 22.9,
+        "regression_or_inflammation": 14.3,
+        "atypical_or_dysplastic_nevus_context": 14.3,
+        "blue_nevus_related": 14.3,
+        "acral_or_lentiginous": 11.4,
+        "nodal_or_metastatic": 8.6,
+        "spitz_related": 8.6
+      },
+      "no_theme_indices": [
+        572,
+        1641,
+        184
+      ],
+      "rows": [
+        {
+          "index": 572,
+          "true_label": "benign",
+          "diagnosis": "NEVUS",
+          "fig_quality": "low_quality",
+          "themes": [],
+          "caption": "Higher magnification histopathology (hematoxylin-eosin stain, original magnification x 200) of the melanocytic nevus with partial BRCA1-associated protein-1 (BAP1)-inactivation (BAPoma) from a 23-year-old female patient. The image reveals nests and strands of relatively monomorphic epithelioid cells with isolated mitoses (top right). This specific histology is compatible with partial BAP1 inactivation.",
+          "biomedclip_pred": "melanoma",
+          "medsiglip_pred": "melanoma"
+        },
+        {
+          "index": 2152,
+          "true_label": "melanoma",
+          "diagnosis": "MELANOMA",
+          "fig_quality": "high_quality",
+          "themes": [
+            "acral_or_lentiginous",
+            "in_situ_or_lentigo_maligna"
+          ],
+          "caption": "Histopathologic appearance of acral lentiginous melanoma in situ, showing increased single unit atypical melanocytes with 3 mitoses in a high-power field. Stained with hematoxylin-eosin at 400\u00d7 original magnification.",
+          "biomedclip_pred": "benign",
+          "medsiglip_pred": "benign"
+        },
+        {
+          "index": 1498,
+          "true_label": "melanoma",
+          "diagnosis": "MELANOMA",
+          "fig_quality": "high_quality",
+          "themes": [
+            "acral_or_lentiginous",
+            "spindle_or_desmoplastic",
+            "regression_or_inflammation"
+          ],
+          "caption": "Acral melanoma. Histopathology at higher magnification, showing the characteristics of tumor cells in acral lentiginous melanoma (ALM). The atypical melanocytes are hyperchromatic, consistent with enlarged hyperchromatic nuclei, and exhibit a cytoplasmic fixation retraction artefact (arrowhead). These cells can be spindle or epithelioid. The dermis contains a chronic inflammatory cell infiltrate, which is often described as band-like and surrounding the tumors, associated with macrophages (arrow). (H&E, \u00d7400).",
+          "biomedclip_pred": "benign",
+          "medsiglip_pred": "benign"
+        },
+        {
+          "index": 1056,
+          "true_label": "melanoma",
+          "diagnosis": "MELANOMA",
+          "fig_quality": "low_quality",
+          "themes": [
+            "in_situ_or_lentigo_maligna",
+            "atypical_or_dysplastic_nevus_context"
+          ],
+          "caption": "Histopathology of a lesion from the back of a 58-year-old male. This lesion was initially submitted with a pretest diagnosis of \u201cbenign; favor severely dysplastic nevus,\u201d but all three reviewing dermatopathologists classified it as melanoma. After the test, the submitting dermatopathologist changed the diagnosis to melanoma in situ. The image is stained with Hematoxylin-eosin; original magnification x200.",
+          "biomedclip_pred": "benign",
+          "medsiglip_pred": "benign"
+        },
+        {
+          "index": 634,
+          "true_label": "melanoma",
+          "diagnosis": "MELANOMA",
+          "fig_quality": "high_quality",
+          "themes": [
+            "spindle_or_desmoplastic",
+            "pigment_heavy"
+          ],
+          "caption": "Histopathology of skin showing malignant melanoma (Clark's level V, Breslow thickness 45 mm) with infiltrating melanin pigment containing epithelioid and spindle tumor cells. Features include brisk mitoses (3 to 5 mitoses/high-power field) and junctional activity. (Hematoxylin and Eosin stain, \u00d7100 magnification).",
+          "biomedclip_pred": "benign",
+          "medsiglip_pred": "benign"
+        },
+        {
+          "index": 1629,
+          "true_label": "benign",
+          "diagnosis": "NEVUS",
+          "fig_quality": "low_quality",
+          "themes": [
+            "blue_nevus_related"
+          ],
+          "caption": "Histopathology of a large Cellular blue nevus (CBN) demonstrating a dumbbell-shaped appearance (original magnification \u00d720). CBN typically lacks overt atypia and high mitotic activity (usually <1/mm\u00b2). This image is stained with hematoxylin-eosin.",
+          "biomedclip_pred": "melanoma",
+          "medsiglip_pred": "melanoma"
+        },
+        {
+          "index": 1670,
+          "true_label": "benign",
+          "diagnosis": "NEVUS",
+          "fig_quality": "high_quality",
+          "themes": [
+            "mucosal_or_special_site",
+            "nodal_or_metastatic"
+          ],
+          "caption": "Histopathology showing melanocytic nevi (NN) in a sentinel lymph node, observed in H&E staining at \u00d7100 magnification. Small groups of melanocytic cells are visible within the nodal capsule (indicated by an arrow), exhibiting bland cytomorphology. NN are growth-arrested melanocytic clusters typically diagnosed in sentinel lymph nodes draining melanoma, breast, vulvar, or penile cancer. Unlike most melanomas, NN usually have bland cytomorphology and no mitotic activity. The localization of these melanocytes within the capsule or trabeculae of the lymph node strongly supports the diagnosis of a benign NN.",
+          "biomedclip_pred": "melanoma",
+          "medsiglip_pred": "melanoma"
+        },
+        {
+          "index": 1754,
+          "true_label": "benign",
+          "diagnosis": "NEVUS",
+          "fig_quality": "high_quality",
+          "themes": [
+            "mucosal_or_special_site",
+            "pigment_heavy"
+          ],
+          "caption": "Histologic examination (hematoxylin and eosin, magnification, \u00d710) revealed proliferation of heavily pigmented melanocytes, mature nevus cells, and abundant melanin-laden macrophages in the underlying stroma, with multiple cysts, consistent with a pigmented cystic compound nevus of the conjunctiva. No evidence of pagetoid spread or dysplasia was detected.",
+          "biomedclip_pred": "melanoma",
+          "medsiglip_pred": "melanoma"
+        },
+        {
+          "index": 1026,
+          "true_label": "melanoma",
+          "diagnosis": "MELANOMA",
+          "fig_quality": "high_quality",
+          "themes": [
+            "mucosal_or_special_site",
+            "in_situ_or_lentigo_maligna"
+          ],
+          "caption": "Histopathology of vulvar melanoma in situ. Photomicrograph of the excised specimen showing confluent, severely atypical melanocytes with pagetoid spread. This characteristic proliferation of enlarged, poorly nested and confluent, severely atypical melanocytes was revealed by the histopathological examination of the excised tissue, confirming melanoma in situ. (Hematoxylin-eosin stain, original magnification \u00d7400).",
+          "biomedclip_pred": "benign",
+          "medsiglip_pred": "benign"
+        },
+        {
+          "index": 1671,
+          "true_label": "benign",
+          "diagnosis": "NEVUS",
+          "fig_quality": "high_quality",
+          "themes": [
+            "mucosal_or_special_site",
+            "nodal_or_metastatic"
+          ],
+          "caption": "Histopathology showing melanocytic nevi (NN) in a sentinel lymph node, observed in H&E staining at \u00d7200 magnification. Small groups of melanocytic cells are visible within the nodal capsule (indicated by an arrow), exhibiting bland cytomorphology. NN are growth-arrested melanocytic clusters typically diagnosed in sentinel lymph nodes draining melanoma, breast, vulvar, or penile cancer. Unlike most melanomas, NN usually have bland cytomorphology and no mitotic activity. The localization of these melanocytes within the capsule or trabeculae of the lymph node strongly supports the diagnosis of a benign NN.",
+          "biomedclip_pred": "melanoma",
+          "medsiglip_pred": "melanoma"
+        },
+        {
+          "index": 1230,
+          "true_label": "melanoma",
+          "diagnosis": "MELANOMA",
+          "fig_quality": "low_quality",
+          "themes": [
+            "mucosal_or_special_site",
+            "pigment_heavy"
+          ],
+          "caption": "Microscopic image of vulvar malignant melanoma, from a 58-year-old female presenting with a gray-white irregular mass on the right labia minora. Histologic examination of the vulvar tissue revealed a large number of tumor cells containing dark-brown intracellular pigment. The patient's tumor synchronously involved the vulva and uterine cervix. Stained with hematoxylin and eosin (H&E), original magnification \u00d7100.",
+          "biomedclip_pred": "benign",
+          "medsiglip_pred": "benign"
+        },
+        {
+          "index": 1641,
+          "true_label": "melanoma",
+          "diagnosis": "MELANOMA",
+          "fig_quality": "low_quality",
+          "themes": [],
+          "caption": "Histopathology of melanoma as seen in a hematoxylin and eosin-stained slide, demonstrating abnormal maturation. Large nests of melanocytes can be seen from top to bottom of the lesion.",
+          "biomedclip_pred": "benign",
+          "medsiglip_pred": "benign"
+        },
+        {
+          "index": 1507,
+          "true_label": "melanoma",
+          "diagnosis": "MELANOMA",
+          "fig_quality": "low_quality",
+          "themes": [
+            "acral_or_lentiginous",
+            "in_situ_or_lentigo_maligna",
+            "pigment_heavy"
+          ],
+          "caption": "Histopathology (hematoxylin and eosin, H&E stain) showing a junctional amelanotic proliferation with a lentiginous pattern of growth, intraepidermal ascending cells, and deep follicular extension. A punch biopsy of the tumor revealed a predominantly lentiginous proliferation within the basal layer of the epidermis, with forming nests, consisting of epithelioid atypical cells, including areas of thinning of the epidermis with loss of rete ridges, and indefinite borders. Severe solar elastosis was present within the dermis, and no melanin pigmentation was identified. The diagnosis was amelanotic lentigo maligna melanoma with a Breslow thickness of 0.7 mm.",
+          "biomedclip_pred": "benign",
+          "medsiglip_pred": "benign"
+        },
+        {
+          "index": 646,
+          "true_label": "benign",
+          "diagnosis": "NEVUS",
+          "fig_quality": "high_quality",
+          "themes": [
+            "atypical_or_dysplastic_nevus_context"
+          ],
+          "caption": "Histopathologic findings of a dark brown, dome-shaped mass excised from the posterior wall of the left ear canal's cartilaginous portion in a 33-year-old woman. The image shows scattered clusters composed of round to oval-shaped melanocytic cells (black arrow) located in the dermis, consistent with a dysplastic nevus within an intradermal nevus, due to the presence of atypical melanocytes without pleomorphism. The image is stained with Hematoxylin-eosin, original magnification \u00d7200.",
+          "biomedclip_pred": "melanoma",
+          "medsiglip_pred": "melanoma"
+        },
+        {
+          "index": 2341,
+          "true_label": "melanoma",
+          "diagnosis": "MELANOMA",
+          "fig_quality": "high_quality",
+          "themes": [
+            "pigment_heavy"
+          ],
+          "caption": "Histopathologic findings of malignant melanoma after repeated recurrent dysplastic nevi. The tumor cells show round to oval nuclei with mild nuclear pleomorphism, small nucleoli, and an irregular nuclear membrane. The cytoplasm contains melanin pigmentation. No mitosis is evident (Hematoxylin and Eosin, \u00d7400 magnification).",
+          "biomedclip_pred": "benign",
+          "medsiglip_pred": "benign"
+        },
+        {
+          "index": 2334,
+          "true_label": "benign",
+          "diagnosis": "NEVUS",
+          "fig_quality": "low_quality",
+          "themes": [
+            "atypical_or_dysplastic_nevus_context"
+          ],
+          "caption": "Histopathology showing sharp demarcation in a focal atypical cell nodule of a congenital melanocytic nevus. Hematoxylin and eosin (H&E) stain, original magnification \u00d740.",
+          "biomedclip_pred": "melanoma",
+          "medsiglip_pred": "melanoma"
+        },
+        {
+          "index": 1737,
+          "true_label": "benign",
+          "diagnosis": "SPITZ_TUMOR",
+          "fig_quality": "low_quality",
+          "themes": [
+            "spitz_related"
+          ],
+          "caption": "Histopathology of a Spitz tumor demonstrating marked tumor asymmetry, which is identified as a risk-associated histopathological feature and a proposed prognostic parameter indicating increased clinical risk for patients. Stained with hematoxylin and eosin, original magnification \u00d725.",
+          "biomedclip_pred": "melanoma",
+          "medsiglip_pred": "melanoma"
+        },
+        {
+          "index": 1413,
+          "true_label": "melanoma",
+          "diagnosis": "MELANOMA",
+          "fig_quality": "high_quality",
+          "themes": [
+            "regression_or_inflammation"
+          ],
+          "caption": "Histopathology of a superficial spreading melanoma from a 21-year-old patient. The melanocytic lesion is characterized by atypical junctional activity and extensive regression in the superficial dermis. This image depicts the regression at the margins of the lesion. The full histological evaluation confirmed a diagnosis of superficial spreading melanoma, Breslow 0.70 mm, Clark level three, pT1a. Hematoxylin and Eosin (H&E) stain, original magnification \u00d710.",
+          "biomedclip_pred": "benign",
+          "medsiglip_pred": "benign"
+        },
+        {
+          "index": 913,
+          "true_label": "melanoma",
+          "diagnosis": "MELANOMA",
+          "fig_quality": "high_quality",
+          "themes": [
+            "mucosal_or_special_site",
+            "in_situ_or_lentigo_maligna"
+          ],
+          "caption": "Histopathology of an original biopsy from an eyelid shows classic lentigo maligna, also known as melanoma in situ, stained with Hematoxylin and eosin (10X magnification). Key features include an increased number of melanocytes forming nests at the dermoepidermal junction, as well as presenting as single cells with mildly enlarged, hyperchromatic nuclei.",
+          "biomedclip_pred": "benign",
+          "medsiglip_pred": "benign"
+        },
+        {
+          "index": 1845,
+          "true_label": "melanoma",
+          "diagnosis": "MELANOMA",
+          "fig_quality": "high_quality",
+          "themes": [
+            "acral_or_lentiginous",
+            "spindle_or_desmoplastic"
+          ],
+          "caption": "Histopathology showing desmoplastic melanoma, characterized by atypical spindle cells embedded in a dense fibrous matrix. The image is stained with haematoxylin and eosin at an original magnification of \u00d710.",
+          "biomedclip_pred": "benign",
+          "medsiglip_pred": "benign"
+        },
+        {
+          "index": 1748,
+          "true_label": "benign",
+          "diagnosis": "SPITZ_TUMOR",
+          "fig_quality": "high_quality",
+          "themes": [
+            "spitz_related"
+          ],
+          "caption": "Histopathology showing focal cellular necrosis in a Spitz tumor, identified as a risk-associated histopathological feature and proposed as a prognostic parameter. Stained with hematoxylin and eosin, original magnification \u00d7400.",
+          "biomedclip_pred": "melanoma",
+          "medsiglip_pred": "melanoma"
+        },
+        {
+          "index": 1076,
+          "true_label": "melanoma",
+          "diagnosis": "MELANOMA",
+          "fig_quality": "low_quality",
+          "themes": [
+            "atypical_or_dysplastic_nevus_context"
+          ],
+          "caption": "Histopathology of a lesion from a 74-year-old male, initially submitted with a pretest diagnosis of \u201cindeterminate; favor irritated compound nevus with moderate to severe atypia.\u201d All three reviewing dermatopathologists classified the lesion as melanoma, with a score of +2.4. Following the test, the submitting dermatopathologist changed the diagnosis to superficial spreading melanoma. This image shows the lesion at an original magnification of x200, stained with Hematoxylin-eosin.",
+          "biomedclip_pred": "benign",
+          "medsiglip_pred": "benign"
+        },
+        {
+          "index": 518,
+          "true_label": "melanoma",
+          "diagnosis": "MELANOMA",
+          "fig_quality": "low_quality",
+          "themes": [
+            "blue_nevus_related",
+            "spindle_or_desmoplastic",
+            "pigment_heavy"
+          ],
+          "caption": "Histopathology showing a subepidermal lesion with subtle pigmentation. This lesion was diagnosed as melanoma arising in a blue nevus, characterized by atypical spindle cells of intermediate to low pigmentation, minimal stroma, sparse lymphocytic infiltration, and growing in a nest-like pattern with high mitotic activity. Stained with hematoxylin and eosin, original magnification 40\u00d7.",
+          "biomedclip_pred": "benign",
+          "medsiglip_pred": "benign"
+        },
+        {
+          "index": 184,
+          "true_label": "melanoma",
+          "diagnosis": "MELANOMA",
+          "fig_quality": "low_quality",
+          "themes": [],
+          "caption": "Histopathology of melanoma, superficial spreading type, showing nests of atypical melanocytic proliferation projecting from the basal layer of the epidermis. Stained with Hematoxylin and Eosin (H&E) at 100X magnification.",
+          "biomedclip_pred": "benign",
+          "medsiglip_pred": "benign"
+        },
+        {
+          "index": 1923,
+          "true_label": "benign",
+          "diagnosis": "NEVUS",
+          "fig_quality": "high_quality",
+          "themes": [
+            "blue_nevus_related",
+            "spindle_or_desmoplastic",
+            "pigment_heavy"
+          ],
+          "caption": "Histopathology (hematoxylin and eosin stain, x10 magnification) of the orbital mass, showing the blue nevus component. This component is characterized by interweaving cells with increased cellularity and heavily pigmented spindle cells, similar to a previous biopsy. Diagnostic pigmented spindle-shaped dendritic cells are visible at the left upper corner, adjacent to amelanotic uniform oval to spindle cells with inconspicuous nucleoli and clear cytoplasm.",
+          "biomedclip_pred": "melanoma",
+          "medsiglip_pred": "melanoma"
+        },
+        {
+          "index": 1669,
+          "true_label": "benign",
+          "diagnosis": "NEVUS",
+          "fig_quality": "high_quality",
+          "themes": [
+            "mucosal_or_special_site",
+            "atypical_or_dysplastic_nevus_context"
+          ],
+          "caption": "High-power hematoxylin and eosin (H&E) stain showing atypical features in a compound vulvar nevus in a patient aged 14 years, in a background of juvenile vulvar lichen sclerosus (JVLS). This view allows for detailed examination of the cytological and architectural characteristics of the nevus, which often present as moderate to severe atypia in cases with VLS. Bar = 0.100 mm.",
+          "biomedclip_pred": "melanoma",
+          "medsiglip_pred": "melanoma"
+        },
+        {
+          "index": 1931,
+          "true_label": "melanoma",
+          "diagnosis": "MELANOMA",
+          "fig_quality": "low_quality",
+          "themes": [
+            "in_situ_or_lentigo_maligna",
+            "regression_or_inflammation"
+          ],
+          "caption": "Histologic examination of lesion D shows the characteristics of in situ malignant melanoma, with marked proliferation of atypical melanocytes along the dermal-epidermal junction and superficial inflammatory infiltration of the dermis. Ulceration and satellite nodules were absent, lymphovascular or perineural invasion were not seen, and the margins were negative. (Hematoxylin & eosin stain, x100 magnification).",
+          "biomedclip_pred": "benign",
+          "medsiglip_pred": "benign"
+        },
+        {
+          "index": 2049,
+          "true_label": "melanoma",
+          "diagnosis": "MELANOMA",
+          "fig_quality": "high_quality",
+          "themes": [
+            "spindle_or_desmoplastic"
+          ],
+          "caption": "Histopathology of a superficial spreading melanoma (SSM) from case 2, stained with H&E at \u00d740 magnification. The image details epithelioid to spindle-shaped melanocytes with pale, eosinophilic cytoplasm. There is variation in the size and shape of the cells, which exhibit large nuclei with prominent nucleoli and nuclear vacuoles, indicating slight nuclear atypia. A few multinucleated cells are also visible, consistent with the detailed microscopical findings for this case.",
+          "biomedclip_pred": "benign",
+          "medsiglip_pred": "benign"
+        },
+        {
+          "index": 1615,
+          "true_label": "benign",
+          "diagnosis": "NEVUS",
+          "fig_quality": "low_quality",
+          "themes": [
+            "mucosal_or_special_site",
+            "regression_or_inflammation"
+          ],
+          "caption": "Microphotograph of the inflamed juvenile conjunctival nevus from Case No. 6 (boy patient, 13 years old). The histological section shows compound nevoid melanocytic proliferation made up of intraepithelial and subepithelial melanocytic nests organized around solid or cystic epithelial inclusions that also contain goblet cells. There is also a dense, diffuse, stromal inflammatory infiltrate with lymphocytes, plasma cells, and eosinophils. At the base of the lesion, lymphocytes are organized into a lymphoid follicle with a germinal center. Hematoxylin\u2013Eosin (HE) staining, original magnification \u00d7100.",
+          "biomedclip_pred": "melanoma",
+          "medsiglip_pred": "melanoma"
+        },
+        {
+          "index": 1741,
+          "true_label": "benign",
+          "diagnosis": "SPITZ_TUMOR",
+          "fig_quality": "low_quality",
+          "themes": [
+            "spitz_related"
+          ],
+          "caption": "Histopathology of a Spitz tumor demonstrating epidermal ulceration, which is identified as a risk-associated histopathological feature and a proposed prognostic parameter indicating increased clinical risk for patients. Stained with hematoxylin and eosin, original magnification \u00d7125.",
+          "biomedclip_pred": "melanoma",
+          "medsiglip_pred": "melanoma"
+        },
+        {
+          "index": 394,
+          "true_label": "benign",
+          "diagnosis": "NEVUS",
+          "fig_quality": "high_quality",
+          "themes": [
+            "spindle_or_desmoplastic",
+            "pigment_heavy"
+          ],
+          "caption": "Left forearm excisional biopsy findings: Hematoxylin and eosin staining showing the proliferation of spindle-shaped, non-pigmented nevomelanocytes in the papillary dermis (arrows). Magnification: \u00d7100.",
+          "biomedclip_pred": "melanoma",
+          "medsiglip_pred": "melanoma"
+        },
+        {
+          "index": 99,
+          "true_label": "melanoma",
+          "diagnosis": "MELANOMA",
+          "fig_quality": "low_quality",
+          "themes": [
+            "in_situ_or_lentigo_maligna"
+          ],
+          "caption": "Histopathology showing lentigo maligna melanoma (LMM) with hematoxylin and eosin (H&E) staining, viewed at x100 magnification.",
+          "biomedclip_pred": "benign",
+          "medsiglip_pred": "benign"
+        },
+        {
+          "index": 2442,
+          "true_label": "benign",
+          "diagnosis": "NEVUS",
+          "fig_quality": "high_quality",
+          "themes": [
+            "nodal_or_metastatic",
+            "blue_nevus_related",
+            "pigment_heavy"
+          ],
+          "caption": "Histopathology of sentinel lymph node deposits from a patient with an atypical deep penetrating nevus, stained with Hematoxylin and eosin at 200\u00d7 magnification. Multiple clusters of coarsely and densely pigmented epithelioid cells are noted within the lymph node parenchyma and subcapsular space. Atypical deep penetrating nevi may show nodal deposits on sentinel lymph node biopsy.",
+          "biomedclip_pred": "melanoma",
+          "medsiglip_pred": "melanoma"
+        },
+        {
+          "index": 622,
+          "true_label": "benign",
+          "diagnosis": "NEVUS",
+          "fig_quality": "high_quality",
+          "themes": [
+            "blue_nevus_related",
+            "spindle_or_desmoplastic",
+            "pigment_heavy",
+            "regression_or_inflammation"
+          ],
+          "caption": "Histopathology of a 5-\u00b5m section from formalin-fixed, paraffin-embedded tissue, stained with Hematoxylin and Eosin (H&E) at \u00d7100 magnification, showing a deep penetrating nevus. Nests of spindle cells and epithelioid-like cells are observed as deep dermal and subcutaneous nested proliferations, arranged in a wedge-shaped pattern. These nests diffusely penetrate and infiltrate the surrounding tissues, including the deep subcutaneous adipose tissue on the left. Note the abundance of melanophages along with some pigment incontinence.",
+          "biomedclip_pred": "melanoma",
+          "medsiglip_pred": "melanoma"
+        },
+        {
+          "index": 788,
+          "true_label": "melanoma",
+          "diagnosis": "MELANOMA",
+          "fig_quality": "low_quality",
+          "themes": [
+            "in_situ_or_lentigo_maligna"
+          ],
+          "caption": "Histopathology showing the intraepidermic component of lentigo maligna melanoma. The image is stained with Haematoxylin Eosin and viewed at 200x magnification.",
+          "biomedclip_pred": "benign",
+          "medsiglip_pred": "benign"
+        }
+      ]
+    },
+    "medsiglip_fail_biomedclip_ok": {
+      "count": 15,
+      "true_label_counts": {
+        "benign": 5,
+        "melanoma": 10
+      },
+      "diagnosis_counts": {
+        "NEVUS": 4,
+        "MELANOMA": 10,
+        "SPITZ_TUMOR": 1
+      },
+      "fig_quality_counts": {
+        "low_quality": 6,
+        "high_quality": 9
+      },
+      "theme_counts": {
+        "acral_or_lentiginous": 4,
+        "pigment_heavy": 3,
+        "in_situ_or_lentigo_maligna": 2,
+        "nodal_or_metastatic": 2,
+        "mucosal_or_special_site": 1,
+        "spindle_or_desmoplastic": 1,
+        "spitz_related": 1
+      },
+      "theme_percentages": {
+        "acral_or_lentiginous": 26.7,
+        "pigment_heavy": 20.0,
+        "in_situ_or_lentigo_maligna": 13.3,
+        "nodal_or_metastatic": 13.3,
+        "mucosal_or_special_site": 6.7,
+        "spindle_or_desmoplastic": 6.7,
+        "spitz_related": 6.7
+      },
+      "no_theme_indices": [
+        398,
+        286,
+        1344,
+        1049,
+        312
+      ],
+      "rows": [
+        {
+          "index": 1986,
+          "true_label": "benign",
+          "diagnosis": "NEVUS",
+          "fig_quality": "low_quality",
+          "themes": [
+            "acral_or_lentiginous",
+            "pigment_heavy"
+          ],
+          "caption": "Histopathology of melanocytic hyperplasia (lentigo), showing a tangential biopsy of a lentigo of the matrix with heavily pigmented melanocytes present in the matrix epithelium. Stained with Hematoxylin and Eosin (H&E), original magnification \u00d74.",
+          "biomedclip_pred": "benign",
+          "medsiglip_pred": "melanoma"
+        },
+        {
+          "index": 1103,
+          "true_label": "melanoma",
+          "diagnosis": "MELANOMA",
+          "fig_quality": "low_quality",
+          "themes": [
+            "in_situ_or_lentigo_maligna"
+          ],
+          "caption": "Histopathology showing an overview of lentigo malignant melanoma (LMM), stained with hematoxylin-eosin (x2 magnification). This image displays the proliferation of atypical melanocytes, seen singly and in nests along the basal layer of the epidermis, and epitheloid nests in the adjacent dermis. The atypical cells are small with prominent nuclei, confirming the diagnosis of LMM.",
+          "biomedclip_pred": "melanoma",
+          "medsiglip_pred": "benign"
+        },
+        {
+          "index": 398,
+          "true_label": "benign",
+          "diagnosis": "NEVUS",
+          "fig_quality": "high_quality",
+          "themes": [],
+          "caption": "Histopathology at higher magnification (200\u00d7), stained with hematoxylin and eosin (H&E), specifically showing sebaceous glands, which are part of the nevus sebaceus.",
+          "biomedclip_pred": "benign",
+          "medsiglip_pred": "melanoma"
+        },
+        {
+          "index": 286,
+          "true_label": "melanoma",
+          "diagnosis": "MELANOMA",
+          "fig_quality": "high_quality",
+          "themes": [],
+          "caption": "Histopathological analysis showing a neoplasm consisting of basophilic cells, forming well-developed nests and masses that infiltrate the dermis, without affecting the epidermis. This is compatible with nodular melanoma of the skin. The image is stained with Hematoxylin & eosin, shown at \u00d740 and \u00d7100 magnification.",
+          "biomedclip_pred": "melanoma",
+          "medsiglip_pred": "benign"
+        },
+        {
+          "index": 1721,
+          "true_label": "melanoma",
+          "diagnosis": "MELANOMA",
+          "fig_quality": "high_quality",
+          "themes": [
+            "nodal_or_metastatic"
+          ],
+          "caption": "High-power view histopathology from the spleen of a 72-year-old male patient, illustrating the morphology of the metastatic malignant neoplasm. It shows round, short spindly, and ovoid tumor cells arranged in vague solid and fascicular patterns, with pink and eosinophilic cytoplasm. This splenic lesion represents a rare isolated metastasis from a cutaneous malignant melanoma diagnosed 25 years prior. Hematoxylin and eosin-stained section, magnification \u00d7 40.",
+          "biomedclip_pred": "melanoma",
+          "medsiglip_pred": "benign"
+        },
+        {
+          "index": 941,
+          "true_label": "benign",
+          "diagnosis": "NEVUS",
+          "fig_quality": "high_quality",
+          "themes": [
+            "acral_or_lentiginous"
+          ],
+          "caption": "Histopathology (40\u00d7 hematoxylin & eosin [H&E] stain) illustrating a striking acrosyringial and periductal distribution of the melanocytic neoplasm. The final histopathological diagnosis was acral compound melanocytic nevus with congenital features.",
+          "biomedclip_pred": "benign",
+          "medsiglip_pred": "melanoma"
+        },
+        {
+          "index": 1673,
+          "true_label": "benign",
+          "diagnosis": "NEVUS",
+          "fig_quality": "high_quality",
+          "themes": [
+            "mucosal_or_special_site",
+            "spindle_or_desmoplastic"
+          ],
+          "caption": "Histopathology at 40x magnification showing a proliferation of bland-appearing spindled cells within the dermis surrounded by loose collagenous stroma, which is consistent with neurofibroma (black arrows). This finding is observed in conjunction with a nevus sebaceus. The image is stained with Hematoxylin and Eosin (H&E).",
+          "biomedclip_pred": "benign",
+          "medsiglip_pred": "melanoma"
+        },
+        {
+          "index": 1638,
+          "true_label": "melanoma",
+          "diagnosis": "MELANOMA",
+          "fig_quality": "low_quality",
+          "themes": [
+            "acral_or_lentiginous"
+          ],
+          "caption": "Histopathology of acral lentiginous melanoma as seen in a hematoxylin and eosin-stained slide. The epidermis can be seen detaching from the dermis, giving the illusion of a blister, which is called an \u201cunzipping\u201d artifact and indicates confluent growth.",
+          "biomedclip_pred": "melanoma",
+          "medsiglip_pred": "benign"
+        },
+        {
+          "index": 1497,
+          "true_label": "melanoma",
+          "diagnosis": "MELANOMA",
+          "fig_quality": "high_quality",
+          "themes": [
+            "acral_or_lentiginous",
+            "in_situ_or_lentigo_maligna"
+          ],
+          "caption": "Acral melanoma. Histopathology showing in situ acral lentiginous melanoma (ALM), characterized by a lentiginous growth pattern. This image displays a continuous proliferation of atypical melanocytes with enlarged hyperchromatic nuclei and prominent dendrites along the dermoepidermal junction (arrowhead). At this late stage of the lesion, there is pagetoid spread and scattered junctional nests at the tips of the rete ridges (arrow), where the confluence of cells has increased. Established lesions also show acanthosis, hypergranulosis, and hyperkeratosis, with marked elongation of the rete ridges. (H&E, \u00d7100).",
+          "biomedclip_pred": "melanoma",
+          "medsiglip_pred": "benign"
+        },
+        {
+          "index": 1344,
+          "true_label": "melanoma",
+          "diagnosis": "MELANOMA",
+          "fig_quality": "high_quality",
+          "themes": [],
+          "caption": "Histopathologic examination of Case 1, a superficial spreading type melanoma with a MAP2K1 in-frame deletion, shows expansile nested growth along the epidermis with associated epidermal effacement. This image demonstrates epidermal involvement, including extension beyond the dermal component, confluent growth along the basal epidermis with rete effacement, and expansile intraepidermal nests. Stained with Hematoxylin and Eosin (H&E).",
+          "biomedclip_pred": "melanoma",
+          "medsiglip_pred": "benign"
+        },
+        {
+          "index": 1049,
+          "true_label": "melanoma",
+          "diagnosis": "MELANOMA",
+          "fig_quality": "high_quality",
+          "themes": [],
+          "caption": "Histopathology image showing irregular islands of infiltrating melanoma cells. A vague pseudo glandular pattern is also visible. The section is stained with Hematoxylin and Eosin (H&E) at \u00d7200 magnification.",
+          "biomedclip_pred": "melanoma",
+          "medsiglip_pred": "benign"
+        },
+        {
+          "index": 312,
+          "true_label": "melanoma",
+          "diagnosis": "MELANOMA",
+          "fig_quality": "high_quality",
+          "themes": [],
+          "caption": "Histopathology of a vulval excision for melanoma, specifically depicting a superficially spreading melanoma. The image shows multiple clusters of atypical melanocytes within the epidermis. The section is stained with haematoxylin and eosin at an original magnification of x40.",
+          "biomedclip_pred": "melanoma",
+          "medsiglip_pred": "benign"
+        },
+        {
+          "index": 1245,
+          "true_label": "melanoma",
+          "diagnosis": "MELANOMA",
+          "fig_quality": "low_quality",
+          "themes": [
+            "pigment_heavy"
+          ],
+          "caption": "Histopathology of the brownish-black solid mass within the ovarian cyst reveals infiltrating nests of pleomorphic cells with prominent nucleoli and black pigments. Junctional activity is also present. These features are characteristic of malignant melanoma originating from the mature cystic teratoma of the ovary, with cytomorphologic features including prominent nucleoli. (H&E stain, original magnification \u00d7\u2009400).",
+          "biomedclip_pred": "melanoma",
+          "medsiglip_pred": "benign"
+        },
+        {
+          "index": 1743,
+          "true_label": "benign",
+          "diagnosis": "SPITZ_TUMOR",
+          "fig_quality": "low_quality",
+          "themes": [
+            "spitz_related",
+            "pigment_heavy"
+          ],
+          "caption": "Histopathology showing abundant melanin in deep cells of a Spitz tumor, identified as a risk-associated histopathological feature and proposed as a prognostic parameter. Stained with hematoxylin and eosin, original magnification \u00d7200.",
+          "biomedclip_pred": "benign",
+          "medsiglip_pred": "melanoma"
+        },
+        {
+          "index": 1336,
+          "true_label": "melanoma",
+          "diagnosis": "MELANOMA",
+          "fig_quality": "low_quality",
+          "themes": [
+            "nodal_or_metastatic"
+          ],
+          "caption": "Histopathology showing the presence of micrometastasis (microsatellitosis) of melanoma located deep to the primary tumor. Micrometastasis is defined as nests of tumor cells adjacent or deep to the primary tumor, identified as a discontinuous nest separated from the primary tumor by normal skin. Stained with hematoxylin and eosin, original magnification \u00d7100.",
+          "biomedclip_pred": "melanoma",
+          "medsiglip_pred": "benign"
+        }
+      ]
+    },
+    "biomedclip_fail_medsiglip_ok": {
+      "count": 21,
+      "true_label_counts": {
+        "melanoma": 10,
+        "benign": 11
+      },
+      "diagnosis_counts": {
+        "MELANOMA": 10,
+        "NEVUS": 10,
+        "SPITZ_TUMOR": 1
+      },
+      "fig_quality_counts": {
+        "high_quality": 11,
+        "low_quality": 10
+      },
+      "theme_counts": {
+        "pigment_heavy": 6,
+        "spindle_or_desmoplastic": 4,
+        "blue_nevus_related": 3,
+        "acral_or_lentiginous": 2,
+        "mucosal_or_special_site": 2,
+        "nodal_or_metastatic": 2,
+        "regression_or_inflammation": 2,
+        "in_situ_or_lentigo_maligna": 2,
+        "spitz_related": 1
+      },
+      "theme_percentages": {
+        "pigment_heavy": 28.6,
+        "spindle_or_desmoplastic": 19.0,
+        "blue_nevus_related": 14.3,
+        "acral_or_lentiginous": 9.5,
+        "mucosal_or_special_site": 9.5,
+        "nodal_or_metastatic": 9.5,
+        "regression_or_inflammation": 9.5,
+        "in_situ_or_lentigo_maligna": 9.5,
+        "spitz_related": 4.8
+      },
+      "no_theme_indices": [
+        2164,
+        1861,
+        2189,
+        2120,
+        2193,
+        308,
+        735
+      ],
+      "rows": [
+        {
+          "index": 1781,
+          "true_label": "melanoma",
+          "diagnosis": "MELANOMA",
+          "fig_quality": "high_quality",
+          "themes": [
+            "acral_or_lentiginous"
+          ],
+          "caption": "Histopathology of a 61-year-old female's back, showing late-onset lentiginous and nested melanoma. The image reveals a chaotic architecture with variably sized nests and confluent single nevoid melanocytes that extend along broad junctional zones where the rete ridges are absent, producing a lentiginous pattern. Key features include loss of rete ridges and confluent melanocytes. This is an H&E stained digital scan at \u00d72 magnification.",
+          "biomedclip_pred": "benign",
+          "medsiglip_pred": "melanoma"
+        },
+        {
+          "index": 2498,
+          "true_label": "benign",
+          "diagnosis": "NEVUS",
+          "fig_quality": "low_quality",
+          "themes": [
+            "mucosal_or_special_site"
+          ],
+          "caption": "Hematoxylin-eosin staining of the right buccal mucosa from the proband\u2019s father, revealing histological features consistent with White Spongy Nevus (WSN). Panel (d) shows spinous cells with nuclear pyknosis (top arrow) and cell edema (bottom arrow). These findings, including nuclei consolidation and edematous spiny cells, are characteristic pathological manifestations of WSN. Original magnification: 400\u00d7.",
+          "biomedclip_pred": "melanoma",
+          "medsiglip_pred": "benign"
+        },
+        {
+          "index": 1580,
+          "true_label": "benign",
+          "diagnosis": "SPITZ_TUMOR",
+          "fig_quality": "low_quality",
+          "themes": [
+            "spitz_related",
+            "spindle_or_desmoplastic",
+            "pigment_heavy"
+          ],
+          "caption": "Photomicrograph of a Spitz nevus harboring ALK fusion, showing a dermal melanocytic proliferation composed of nonpigmented, large, epithelioid and spindle melanocytes with amphophilic cytoplasm, vesicular nuclei, and prominent nucleoli, arranged in plexiform intersecting fascicles. The presence of non-pigmented, large, spindle melanocytes with pericellular clefts, amphophilic cytoplasm, vesicular nuclei, and prominent nucleoli, growing in plexiform intersecting fascicles, appears as a hallmark of ALK fusions. The epidermis is often hyperplastic and pagetoid spread is usually absent. Nuclear pleomorphism is usually mild and rarely moderate. H&E staining; original magnification 100\u00d7.",
+          "biomedclip_pred": "melanoma",
+          "medsiglip_pred": "benign"
+        },
+        {
+          "index": 1985,
+          "true_label": "benign",
+          "diagnosis": "NEVUS",
+          "fig_quality": "low_quality",
+          "themes": [
+            "acral_or_lentiginous"
+          ],
+          "caption": "Histopathology revealing melanocyte nests within the matrix epithelium, consistent with melanocytic nevi. The image is stained with Hematoxylin and Eosin (H&E) and captured at \u00d740 magnification.",
+          "biomedclip_pred": "melanoma",
+          "medsiglip_pred": "benign"
+        },
+        {
+          "index": 307,
+          "true_label": "melanoma",
+          "diagnosis": "MELANOMA",
+          "fig_quality": "high_quality",
+          "themes": [
+            "nodal_or_metastatic",
+            "spindle_or_desmoplastic"
+          ],
+          "caption": "Histopathology showing cerebroid nests of melanocytes (CNMs) in nodular melanoma, observed during a morphological comparison between poorly differentiated clusters (PDCs) and CNMs. CNMs are readily detectable and display a morphology similar to PDCs in colorectal carcinoma. These CNMs, an active growth front of nodular melanoma, are characterized by atypical pleomorphic melanocytic cells with large cytoplasm, spindle or epithelioid shape, and prominent nucleoli, often detaching from the main mass with an infiltrative appearance. CNMs are associated with lymphatic vascular invasion, higher Clark level (Clark\u2019s IV and V), epithelioid phenotype, aggressive growth, and clinically characterized by recurrence and metastasis. The image is a Hematoxylin and eosin stained slide at 20x magnification, with a scale bar of 100 \u00b5m.",
+          "biomedclip_pred": "benign",
+          "medsiglip_pred": "melanoma"
+        },
+        {
+          "index": 2497,
+          "true_label": "benign",
+          "diagnosis": "NEVUS",
+          "fig_quality": "low_quality",
+          "themes": [
+            "mucosal_or_special_site"
+          ],
+          "caption": "Hematoxylin-eosin staining of the right buccal mucosa from the proband\u2019s father, revealing histological features consistent with White Spongy Nevus (WSN). Panel (c) highlights vacuolar change of spinous cells, indicated by the red arrow. The presence of enlarged and vacuolated spiny cells is a characteristic pathological manifestation of WSN. Original magnification: 200\u00d7.",
+          "biomedclip_pred": "melanoma",
+          "medsiglip_pred": "benign"
+        },
+        {
+          "index": 2164,
+          "true_label": "melanoma",
+          "diagnosis": "MELANOMA",
+          "fig_quality": "high_quality",
+          "themes": [],
+          "caption": "Skin biopsy (10\u00d7 magnification) stained with Hematoxylin and Eosin revealing epidermal malignant epithelial neoplasia. Tumor cells, which are large with abundant clear/pale cytoplasm, pleomorphic nuclei, and prominent nucleoli, are observed. These cells are arranged in small nests and isolated forms across all levels of the epidermis, exhibiting pagetoid migration. Histological sections also revealed dermal invasion by individual cells and glandular structures.",
+          "biomedclip_pred": "benign",
+          "medsiglip_pred": "melanoma"
+        },
+        {
+          "index": 1127,
+          "true_label": "benign",
+          "diagnosis": "NEVUS",
+          "fig_quality": "low_quality",
+          "themes": [
+            "blue_nevus_related",
+            "spindle_or_desmoplastic",
+            "pigment_heavy",
+            "regression_or_inflammation"
+          ],
+          "caption": "Histopathology of a central lesion from a 15-year-old female patient with a pigmented lesion on the lateral aspect of the left arm. The image shows spindle-shaped and dendritic, strongly pigmented melanocytes amid dense fibrous stroma and melanophages, predominantly occupying the upper and mid dermis. These features contribute to the diagnosis of common blue nevus with satellitosis. Stained with Hematoxylin & eosin, original magnification X40.",
+          "biomedclip_pred": "melanoma",
+          "medsiglip_pred": "benign"
+        },
+        {
+          "index": 1861,
+          "true_label": "benign",
+          "diagnosis": "NEVUS",
+          "fig_quality": "low_quality",
+          "themes": [],
+          "caption": "Histopathology of the main lesion showing periappendageal and perivascular concentrations of nevus cells. Hematoxylin and eosin (HE) stain. Original magnification \u00d7100.",
+          "biomedclip_pred": "melanoma",
+          "medsiglip_pred": "benign"
+        },
+        {
+          "index": 2393,
+          "true_label": "melanoma",
+          "diagnosis": "MELANOMA",
+          "fig_quality": "low_quality",
+          "themes": [
+            "pigment_heavy"
+          ],
+          "caption": "Histopathology (hematoxylin and eosin stain, 20\u00d7 magnification) of a nevus-associated melanoma from a 76-year-old woman. The image shows an asymmetric melanocytic lesion composed on the left side by a dermal proliferation of monomorphous melanocytes with maturation, which corresponds to the central hypopigmented-brown structureless areas observed dermoscopically. On the right shoulder, elongated rete-ridges are present with atypical melanocytes in single units and irregular nests throughout all epidermal layers, correlating to the atypical network seen in the dermoscopic image.",
+          "biomedclip_pred": "benign",
+          "medsiglip_pred": "melanoma"
+        },
+        {
+          "index": 525,
+          "true_label": "benign",
+          "diagnosis": "NEVUS",
+          "fig_quality": "low_quality",
+          "themes": [
+            "blue_nevus_related",
+            "pigment_heavy"
+          ],
+          "caption": "Histopathology of a dermally located pigmented lesion, identified as a sclerotic blue nevus, from a 48-year-old female's 8mm bluish lesion on the left leg. The lesion was initially suspected to be a fibrous histiocytoma but showed morphological characteristics similar to a dendritic blue nevus with pronounced sclerotic stroma upon pathological examination. Stained with hematoxylin and eosin, original magnification 40\u00d7.",
+          "biomedclip_pred": "melanoma",
+          "medsiglip_pred": "benign"
+        },
+        {
+          "index": 2189,
+          "true_label": "benign",
+          "diagnosis": "NEVUS",
+          "fig_quality": "high_quality",
+          "themes": [],
+          "caption": "Detailed view of the remaining intradermal nevus and the fibrosis, which runs parallel to the direction of the epidermis. This image provides a higher magnification of features seen in the traumatized nevus from a 44-year-old female patient's thigh. The presence of fibrosis is consistent with a traumatized melanocytic lesion, highlighting the need for comprehensive clinical correlation, including patient age, lesion location, and any history of trauma, which can influence microscopic interpretation. The image is stained with Hematoxylin & eosin at \u00d7200 magnification.",
+          "biomedclip_pred": "melanoma",
+          "medsiglip_pred": "benign"
+        },
+        {
+          "index": 612,
+          "true_label": "melanoma",
+          "diagnosis": "MELANOMA",
+          "fig_quality": "high_quality",
+          "themes": [
+            "in_situ_or_lentigo_maligna"
+          ],
+          "caption": "Microscopic image of histopathology for Case 21, an 82-year-old male presenting with lentigo maligna melanoma (LMM) on the forehead. The image, stained with H&E and viewed at 100x magnification, shows the tumor at Level 1 with a Breslow thickness of 0.5 mm.",
+          "biomedclip_pred": "benign",
+          "medsiglip_pred": "melanoma"
+        },
+        {
+          "index": 2120,
+          "true_label": "benign",
+          "diagnosis": "NEVUS",
+          "fig_quality": "high_quality",
+          "themes": [],
+          "caption": "Histopathological findings showing on the base a focus with nests of a conventional nevus. Hematoxylin and eosin (H&E) stain, x 20 magnification.",
+          "biomedclip_pred": "melanoma",
+          "medsiglip_pred": "benign"
+        },
+        {
+          "index": 2193,
+          "true_label": "melanoma",
+          "diagnosis": "MELANOMA",
+          "fig_quality": "high_quality",
+          "themes": [],
+          "caption": "Histopathologic findings of cutaneous melanoma from an individual with a germline variant in POT1 (p.His226Asn). Low magnification shows spitzoid melanoma with epidermal and dermal nests, growing adjacent to a nevus, marked by the arrows. Stained with hematoxylin and eosin, original magnification: X4.",
+          "biomedclip_pred": "benign",
+          "medsiglip_pred": "melanoma"
+        },
+        {
+          "index": 1337,
+          "true_label": "melanoma",
+          "diagnosis": "MELANOMA",
+          "fig_quality": "high_quality",
+          "themes": [
+            "nodal_or_metastatic"
+          ],
+          "caption": "Histopathology showing the presence of micrometastasis (microsatellitosis) of melanoma located deep to the primary tumor. Micrometastasis is defined as nests of tumor cells adjacent or deep to the primary tumor, identified as a discontinuous nest separated from the primary tumor by normal skin. Stained with hematoxylin and eosin, original magnification \u00d7200.",
+          "biomedclip_pred": "benign",
+          "medsiglip_pred": "melanoma"
+        },
+        {
+          "index": 532,
+          "true_label": "benign",
+          "diagnosis": "NEVUS",
+          "fig_quality": "low_quality",
+          "themes": [
+            "blue_nevus_related",
+            "spindle_or_desmoplastic",
+            "pigment_heavy"
+          ],
+          "caption": "Histopathology of the cheek lesion, diagnosed as a cellular blue nevus. Panel C shows spindle cell melanocytes with subtle pigment deposition. These tumor cells are oval to spindle-shaped, featuring small monomorphic nuclei, speckled chromatin, and light or finely pigmented cytoplasm. A distinct rim of sclerotic stroma surrounds the nests of these cells, which are also accompanied by pigmented macrophages. Staining is hematoxylin and eosin, original magnification 200\u00d7.",
+          "biomedclip_pred": "melanoma",
+          "medsiglip_pred": "benign"
+        },
+        {
+          "index": 613,
+          "true_label": "melanoma",
+          "diagnosis": "MELANOMA",
+          "fig_quality": "high_quality",
+          "themes": [
+            "in_situ_or_lentigo_maligna"
+          ],
+          "caption": "Microscopic image of histopathology for Case 21, an 82-year-old male presenting with lentigo maligna melanoma (LMM) on the forehead. The image, stained with H&E and viewed at 100x magnification, shows the tumor at Level 4 with a Breslow thickness of 0.9 mm. This increased Breslow thickness (compared to 0.5 mm on Level 1 in panel a) resulted in the upstaging of the patient from pT1a to pT1b.",
+          "biomedclip_pred": "benign",
+          "medsiglip_pred": "melanoma"
+        },
+        {
+          "index": 308,
+          "true_label": "melanoma",
+          "diagnosis": "MELANOMA",
+          "fig_quality": "high_quality",
+          "themes": [],
+          "caption": "Histopathology of nodular melanoma showing Cerebroid nests of melanocytes (CNMs) graded as G1, characterized by 0 to 4 buds. The image is a hematoxylin and eosin stained slide at 20x magnification with a 100 \u00b5m scale bar.",
+          "biomedclip_pred": "benign",
+          "medsiglip_pred": "melanoma"
+        },
+        {
+          "index": 735,
+          "true_label": "benign",
+          "diagnosis": "NEVUS",
+          "fig_quality": "low_quality",
+          "themes": [],
+          "caption": "Histopathology showing nests of nevus cells with overlying normal epidermis. The nevus cells have a large nucleus and scanty eosinophilic cytoplasm. (Hematoxylin and Eosin stain, 10x magnification).",
+          "biomedclip_pred": "melanoma",
+          "medsiglip_pred": "benign"
+        },
+        {
+          "index": 2394,
+          "true_label": "melanoma",
+          "diagnosis": "MELANOMA",
+          "fig_quality": "high_quality",
+          "themes": [
+            "pigment_heavy",
+            "regression_or_inflammation"
+          ],
+          "caption": "Histopathology of a superficial spreading melanoma (T1a, Breslow 0.53 mm) from the left chest of a 44-year-old man. Superficial spreading melanoma is characterized by an initial radial growth phase (RGP) with atypical melanocytes. This hematoxylin and eosin (HE) stained image (100\u00d7 magnification) shows peripheral, confluent, and heavily pigmented atypical junctional nests of melanocytes. These nests correlate with pseudopods observed in dermoscopy. Additionally, structureless black and blue areas seen in dermoscopy are typically related to a heavy band-like lymphohistiocytic infiltrate with melanophages in the dermis.",
+          "biomedclip_pred": "benign",
+          "medsiglip_pred": "melanoma"
+        }
+      ]
+    }
+  }
+}
