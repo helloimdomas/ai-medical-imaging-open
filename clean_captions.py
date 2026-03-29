@@ -1,15 +1,17 @@
 """
 Clean Open-MELON captions by removing non-visual information.
-Uses gemma-3-27b-it via Gemini API to rewrite captions keeping only visual descriptions.
-Saves incrementally to JSONL with resume support.
+
+Modes:
+- clean: rewrite captions keeping only visual descriptions
+- clean_and_label: infer a conservative diagnosis label and output
+  "Diagnosis. Cleaned caption" in structured form
 
 Setup:
   export GEMINI_API_KEY="your-api-key"
-  uv pip install google-genai datasets
-  python clean_captions.py
+  uv run python clean_captions.py
 """
 
-import json, time, os, argparse
+import json, time, os, argparse, re
 from pathlib import Path
 
 # CONFIG 
@@ -32,6 +34,15 @@ SYSTEM_PROMPT = (
     "Output ONLY the rewritten caption, nothing else."
 )
 
+LABEL_SYSTEM_PROMPT = (
+    "Read the histopathology caption and fill in this JSON only: "
+    '{"diagnosis":"MELANOMA|NEVUS|SPITZ_TUMOR|DIFFERENTIAL|OTHER","cleaned":"Diagnosis. Cleaned caption."}. '
+    "Use MELANOMA, NEVUS, or SPITZ_TUMOR only for very clear final diagnoses. "
+    "If the diagnosis is excluded, uncertain, comparative, or part of a differential, use DIFFERENTIAL. "
+    "If it is clearly something else, use OTHER. "
+    "Cleaned text must keep only morphology and the retained diagnosis, with no staining, magnification, demographics, or panel text."
+)
+
 
 def load_completed(path: Path) -> dict[int, dict]:
     """Load completed entries from JSONL, return {index: record}."""
@@ -52,15 +63,13 @@ def append_result(path: Path, result: dict) -> None:
         f.write(json.dumps(result) + "\n")
 
 
-def ask_gemma(caption: str, client, max_retries: int = 5) -> str:
+def call_gemma(prompt: str, system_prompt: str, client, max_retries: int = 5) -> str:
     """Call Gemma via Gemini API with exponential backoff."""
-    prompt = f"Rewrite this caption keeping only visual descriptions:\n\n{caption}"
-    
     for attempt in range(max_retries):
         try:
             response = client.models.generate_content(
                 model=MODEL,
-                contents=[{"role": "user", "parts": [{"text": SYSTEM_PROMPT + "\n\n" + prompt}]}],
+                contents=[{"role": "user", "parts": [{"text": system_prompt + "\n\n" + prompt}]}],
                 config={"temperature": 0, "max_output_tokens": 300},
             )
             return response.text.strip()
@@ -74,24 +83,81 @@ def ask_gemma(caption: str, client, max_retries: int = 5) -> str:
     raise Exception(f"Max retries ({max_retries}) exceeded")
 
 
+def ask_gemma_clean(caption: str, client, max_retries: int = 5) -> str:
+    """Rewrite the caption keeping only visual descriptions."""
+    prompt = f"Rewrite this caption keeping only visual descriptions:\n\n{caption}"
+    return call_gemma(prompt, SYSTEM_PROMPT, client, max_retries=max_retries)
+
+
+def extract_json_object(text: str) -> dict:
+    """Extract the first JSON object from model output."""
+    text = text.strip()
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        pass
+
+    match = re.search(r"\{.*\}", text, flags=re.DOTALL)
+    if not match:
+        raise ValueError(f"No JSON object found in response: {text[:200]}")
+    return json.loads(match.group(0))
+
+
+def ask_gemma_clean_and_label(caption: str, client, max_retries: int = 5) -> dict:
+    """Rewrite the caption and assign a conservative diagnosis label."""
+    prompt = f"Analyze this caption and return the JSON object only:\n\n{caption}"
+    response_text = call_gemma(prompt, LABEL_SYSTEM_PROMPT, client, max_retries=max_retries)
+    payload = extract_json_object(response_text)
+
+    diagnosis = str(payload.get("diagnosis", "")).strip().upper()
+    cleaned = str(payload.get("cleaned", "")).strip()
+    if diagnosis not in {"MELANOMA", "NEVUS", "SPITZ_TUMOR", "DIFFERENTIAL", "OTHER"}:
+        raise ValueError(f"Unexpected diagnosis label: {diagnosis}")
+    if not cleaned:
+        raise ValueError("Missing cleaned caption in Gemini response")
+
+    payload["diagnosis"] = diagnosis
+    payload["cleaned"] = cleaned
+    return payload
+
+
 def main():
-    from datasets import load_dataset, concatenate_datasets
-    from google import genai
-    
-    parser = argparse.ArgumentParser(description="Clean Open-MELON captions")
+    parser = argparse.ArgumentParser(description="Clean or label Open-MELON captions")
     parser.add_argument("--api-key", help="Gemini API key (or set GEMINI_API_KEY env var)")
     parser.add_argument("-n", type=int, default=-1, help="Process only first N images (-1 for all)")
+    parser.add_argument(
+        "--mode",
+        choices=["clean", "clean_and_label"],
+        default="clean",
+        help="Whether to only clean captions or to also assign a conservative diagnosis label",
+    )
+    parser.add_argument(
+        "--all-indices",
+        action="store_true",
+        help="Process the full dataset instead of the current melanoma/nevus index subset",
+    )
+    parser.add_argument(
+        "--output",
+        help="Custom output JSONL path",
+    )
     args = parser.parse_args()
     
     api_key = args.api_key or API_KEY
     if not api_key:
         print("Error: Set GEMINI_API_KEY environment variable or use --api-key")
         return
+
+    from datasets import load_dataset, concatenate_datasets
+    from google import genai
     
     client = genai.Client(api_key=api_key)
     
-    # Output path
-    output_file = SCRIPT_DIR / "captions" / "captions_cleaned.jsonl"
+    default_output = (
+        SCRIPT_DIR / "captions" / "captions_cleaned.jsonl"
+        if args.mode == "clean"
+        else SCRIPT_DIR / "captions" / "captions_cleaned_labeled.jsonl"
+    )
+    output_file = Path(args.output) if args.output else default_output
     output_file.parent.mkdir(parents=True, exist_ok=True)
 
     print("Loading Open-MELON dataset (all splits)...", flush=True)
@@ -99,18 +165,21 @@ def main():
     ds = concatenate_datasets([ds_raw["train"], ds_raw["validation"], ds_raw["test"]])
     print(f"Total images: {len(ds)}")
 
-    # Load target indices (melanoma + nevus only)
-    with open(INDEX_FILE) as f:
-        idx_data = json.load(f)
-    target_indices = sorted(idx_data["melanoma"] + idx_data["nevus"])
+    idx_data = None
+    target_indices = list(range(len(ds))) if args.all_indices else None
+    if not args.all_indices:
+        with open(INDEX_FILE) as f:
+            idx_data = json.load(f)
+        target_indices = sorted(idx_data["melanoma"] + idx_data["nevus"])
     
     if args.n > 0:
         target_indices = target_indices[:args.n]
     n = len(target_indices)
 
-    # Build label lookup
-    mel_set = set(idx_data["melanoma"])
-    label_of = {i: "melanoma" if i in mel_set else "nevus" for i in target_indices}
+    label_of = {}
+    if idx_data is not None:
+        mel_set = set(idx_data["melanoma"])
+        label_of = {i: "melanoma" if i in mel_set else "nevus" for i in target_indices}
 
     done = load_completed(output_file)
     remaining = len([i for i in target_indices if i not in done])
@@ -131,7 +200,10 @@ def main():
         t0 = time.time()
         
         try:
-            cleaned = ask_gemma(caption, client)
+            if args.mode == "clean":
+                payload = {"cleaned": ask_gemma_clean(caption, client)}
+            else:
+                payload = ask_gemma_clean_and_label(caption, client)
         except Exception as e:
             print(f"Error on idx={i}: {e}")
             time.sleep(2)
@@ -141,11 +213,12 @@ def main():
 
         result = {
             "index": i,
-            "label": label_of[i],
             "original": caption,
-            "cleaned": cleaned,
             "time_s": round(elapsed, 2),
         }
+        if i in label_of:
+            result["label"] = label_of[i]
+        result.update(payload)
 
         append_result(output_file, result)
         done[i] = result
