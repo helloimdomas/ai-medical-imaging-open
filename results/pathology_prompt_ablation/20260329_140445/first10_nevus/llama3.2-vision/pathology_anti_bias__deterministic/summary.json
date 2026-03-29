@@ -1,0 +1,40 @@
+{
+  "total": 10,
+  "accuracy": 0.0,
+  "pred_counts": {
+    "benign": 0,
+    "melanoma": 0,
+    "unknown": 10
+  },
+  "true_counts": {
+    "benign": 10,
+    "melanoma": 0
+  },
+  "correct": 0,
+  "timestamp": "2026-03-29T15:05:39.414142",
+  "subset_id": "first10_nevus",
+  "subset_description": "NEVUS first 10",
+  "model": "llama3.2-vision",
+  "run_id": "pathology_anti_bias__deterministic",
+  "prompt_id": "pathology_anti_bias",
+  "prompt_description": "Pathology-specific anti-melanoma-bias prompt",
+  "parameter_id": "deterministic",
+  "parameter_description": "Low-variance baseline",
+  "options": {
+    "temperature": 0.0,
+    "top_p": 0.9,
+    "num_predict": 160
+  },
+  "target_indices": [
+    33,
+    120,
+    121,
+    171,
+    196,
+    197,
+    205,
+    206,
+    207,
+    224
+  ]
+}

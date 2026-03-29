@@ -568,6 +568,92 @@ Overall interpretation of the hard-case run:
   - collapses into truncated or degenerate text on difficult cases
 - This makes it weak as a fallback for difficult pathology cases even when its outputs look superficially more descriptive than MedGemma's.
 
+### 12. Pathology-specific anti-melanoma-bias prompt ablation
+
+Source:
+
+- `results/pathology_prompt_ablation/20260329_140445/`
+
+Setup:
+
+- Models:
+  - `dcarrascosa/medgemma-1.5-4b-it:Q4_K_M`
+  - `llama3.2-vision`
+- Prompts:
+  - `closed_binary`
+  - `pathology_anti_bias`
+- Decoding:
+  - deterministic only
+- Subsets:
+  - `first10_nevus`
+  - `first10_melanoma`
+  - `hard_cases_shared_failures`
+
+Prompt idea:
+
+- Ask the model to first list features supporting benignity, then features supporting melanoma.
+- Explicitly warn against diagnosing melanoma unless multiple malignant features are present.
+- Force the final label to one of:
+  - `MELANOMA`
+  - `BENIGN NEVUS`
+
+Results table:
+
+| Subset | Model | `closed_binary` | `pathology_anti_bias` |
+| :--- | :--- | ---: | ---: |
+| first10_nevus | MedGemma | 0/10 (0%) | 8/10 (80%) |
+| first10_melanoma | MedGemma | 10/10 (100%) | 3/10 (30%) |
+| hard_cases_shared_failures | MedGemma | 18/35 (51.4%) | 16/35 (45.7%) |
+| first10_nevus | `llama3.2-vision` | 10/10 (100%) | 0/10 (0%, all unknown) |
+| first10_melanoma | `llama3.2-vision` | 0/10 (0%) | 1/10 (10%, mostly unknown) |
+| hard_cases_shared_failures | `llama3.2-vision` | 15/35 (42.9%) | 2/35 (5.7%, 30 unknown) |
+
+Detailed behavior:
+
+- MedGemma, nevus subset:
+  - The anti-bias prompt strongly reduced melanoma overcalling.
+  - Accuracy improved from 0/10 to 8/10.
+- MedGemma, melanoma subset:
+  - The same prompt badly reduced melanoma recall.
+  - Accuracy fell from 10/10 to 3/10.
+- MedGemma, hard cases:
+  - The anti-bias prompt did not help overall.
+  - Accuracy dropped slightly from 18/35 to 16/35.
+
+- `llama3.2-vision`, all subsets:
+  - The anti-bias prompt was harmful.
+  - The model frequently produced long rubric-style outputs that did not resolve to a clean final diagnosis.
+  - This caused a large `unknown` collapse:
+    - 10/10 unknown on the nevus subset
+    - 9/10 unknown on the melanoma subset
+    - 30/35 unknown on the hard-case subset
+
+Qualitative interpretation:
+
+- MedGemma is clearly prompt-sensitive.
+  - The pathology anti-bias prompt can move it away from the default melanoma-overcall behavior.
+  - But this is not a real fix.
+  - It mostly trades one bias for another:
+    - from melanoma-overcalling
+    - to melanoma-undercalling
+- The generated MedGemma outputs are also highly templated.
+  - On many samples the model repeats nearly the same benign-vs-malignant bullet list regardless of image content.
+  - The prompt appears to steer the decision prior more than it improves true case-specific reading.
+
+- `llama3.2-vision` reacts differently.
+  - The longer pathology anti-bias prompt causes the model to spend its output budget reciting the requested rubric.
+  - It often fails to produce a parsable final diagnosis.
+  - This makes it much worse than the simpler binary prompt in this setup.
+
+Conclusion from this ablation:
+
+- The anti-melanoma-bias prompt is worth keeping as evidence that prompt framing can substantially change MedGemma's output distribution.
+- But it does not make MedGemma reliable; it overcorrects.
+- For `llama3.2-vision`, the anti-bias prompt is actively bad.
+- The broader project conclusion remains unchanged:
+  - prompt engineering can move generative behavior
+  - but it does not close the gap to embedding-based classifiers on this task
+
 ## Current best result
 
 Current best single held-out split:

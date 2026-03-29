@@ -1,0 +1,36 @@
+models:
+  - "dcarrascosa/medgemma-1.5-4b-it:Q4_K_M"
+  - "llama3.2-vision"
+
+subsets:
+  hard_cases_shared_failures:
+    type: "failure_bucket"
+    source: "results/svm_failure_comparison.json"
+    bucket: "both_wrong"
+  first10_nevus:
+    type: "diagnosis_first_n"
+    diagnosis: "NEVUS"
+    n: 10
+  first10_melanoma:
+    type: "diagnosis_first_n"
+    diagnosis: "MELANOMA"
+    n: 10
+
+prompts:
+  closed_binary:
+    description: "Binary melanoma vs benign nevus"
+    prompt: |
+      You are a dermatopathologist examining a biopsy. This lesion is either MELANOMA or a BENIGN NEVUS. Describe the key histological features in 2-3 sentences and state your diagnosis. Answer format: Description. Diagnosis.
+
+  pathology_anti_bias:
+    description: "Pathology-specific anti-melanoma-bias prompt"
+    prompt: |
+      You are a dermatopathologist examining a biopsy. First list the histopathologic features that support a benign melanocytic lesion, if any. Then list the features that support melanoma, if any. Focus on architectural disorder, cytologic atypia, pagetoid spread, maturation, mitotic activity, junctional activity, and invasion. Do not diagnose MELANOMA unless multiple malignant features are present. The final diagnosis must be exactly one of: MELANOMA or BENIGN NEVUS. Answer format: Benign features. Malignant features. Final diagnosis: MELANOMA or BENIGN NEVUS.
+
+parameter_sets:
+  deterministic:
+    description: "Low-variance baseline"
+    options:
+      temperature: 0.0
+      top_p: 0.9
+      num_predict: 160

@@ -1,0 +1,40 @@
+{
+  "total": 10,
+  "accuracy": 100.0,
+  "pred_counts": {
+    "benign": 0,
+    "melanoma": 10,
+    "unknown": 0
+  },
+  "true_counts": {
+    "benign": 0,
+    "melanoma": 10
+  },
+  "correct": 10,
+  "timestamp": "2026-03-29T15:06:48.168141",
+  "subset_id": "first10_melanoma",
+  "subset_description": "MELANOMA first 10",
+  "model": "dcarrascosa/medgemma-1.5-4b-it:Q4_K_M",
+  "run_id": "closed_binary__deterministic",
+  "prompt_id": "closed_binary",
+  "prompt_description": "Binary melanoma vs benign nevus",
+  "parameter_id": "deterministic",
+  "parameter_description": "Low-variance baseline",
+  "options": {
+    "temperature": 0.0,
+    "top_p": 0.9,
+    "num_predict": 160
+  },
+  "target_indices": [
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    20,
+    22,
+    24
+  ]
+}
