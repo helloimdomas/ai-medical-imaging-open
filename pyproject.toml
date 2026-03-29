@@ -19,15 +19,23 @@ captioning = [
   "google-genai>=1.0.0",
   "ollama>=0.4.0",
 ]
+dermatollama = [
+  "accelerate>=1.8.0",
+  "peft>=0.16.0",
+  "torch>=2.6.0",
+  "transformers>=4.45.0",
+]
 embeddings = [
   "open-clip-torch>=2.26.0",
   "torch>=2.6.0",
   "transformers>=4.45.0",
 ]
 dev = [
+  "accelerate>=1.8.0",
   "google-genai>=1.0.0",
   "ollama>=0.4.0",
   "open-clip-torch>=2.26.0",
+  "peft>=0.16.0",
   "torch>=2.6.0",
   "transformers>=4.45.0",
 ]

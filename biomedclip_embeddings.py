@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Extract BiomedCLIP image embeddings for melanoma vs nevus classification.
+Extract BiomedCLIP image embeddings for the full Open-MELON dataset.
 
 Usage:
     uv run python biomedclip_embeddings.py
@@ -14,18 +14,31 @@ from pathlib import Path
 import numpy as np
 
 SCRIPT_DIR = Path(__file__).parent
-INDEX_FILE = SCRIPT_DIR / "indices" / "melanoma_nevus_indices.json"
+LABEL_FILE = SCRIPT_DIR / "captions" / "captions_cleaned_labeled.jsonl"
 CACHE_DIR = os.path.expanduser("~/.cache/huggingface")
 MODEL_ID = "hf-hub:microsoft/BiomedCLIP-PubMedBERT_256-vit_base_patch16_224"
 
 
-def load_indices():
-    """Load ground-truth melanoma/nevus indices."""
-    with open(INDEX_FILE) as f:
-        idx_data = json.load(f)
+def load_label_selection(label_path: Path = LABEL_FILE, include_spitz_as_nevus: bool = True):
+    """Load benchmark indices from the Gemini-labeled caption file."""
+    keep_as_benign = {"NEVUS"}
+    if include_spitz_as_nevus:
+        keep_as_benign.add("SPITZ_TUMOR")
 
-    target_indices = sorted(idx_data["melanoma"] + idx_data["nevus"])
-    melanoma_set = set(idx_data["melanoma"])
+    melanoma_set = set()
+    benign_set = set()
+
+    with open(label_path) as f:
+        for line in f:
+            row = json.loads(line)
+            diagnosis = row.get("diagnosis")
+            idx = row["index"]
+            if diagnosis == "MELANOMA":
+                melanoma_set.add(idx)
+            elif diagnosis in keep_as_benign:
+                benign_set.add(idx)
+
+    target_indices = sorted(melanoma_set | benign_set)
     label_by_index = {idx: 1 if idx in melanoma_set else 0 for idx in target_indices}
     return target_indices, melanoma_set, label_by_index
 
@@ -135,13 +148,14 @@ def zero_shot_classify(model, preprocess, tokenizer, device, dataset, target_ind
     }
 
 
-def extract_embeddings(model, preprocess, device, dataset, target_indices, label_by_index, batch_size=16):
+def extract_embeddings(model, preprocess, device, dataset, target_indices=None, batch_size=16):
     """Extract normalized BiomedCLIP embeddings."""
     import torch
 
     embeddings = []
-    labels = []
     idx_list = []
+    if target_indices is None:
+        target_indices = list(range(len(dataset)))
 
     print(f"Extracting embeddings for {len(target_indices)} images...")
 
@@ -155,20 +169,21 @@ def extract_embeddings(model, preprocess, device, dataset, target_indices, label
             batch_embeddings = batch_embeddings / batch_embeddings.norm(dim=-1, keepdim=True)
 
         embeddings.append(batch_embeddings.cpu().numpy())
-        labels.extend(label_by_index[idx] for idx in batch_indices)
         idx_list.extend(batch_indices)
 
         processed = start + len(batch_indices)
         if processed % 50 == 0 or processed == len(target_indices):
             print(f"  [{processed}/{len(target_indices)}] extracted")
 
-    return np.concatenate(embeddings, axis=0), np.array(labels), np.array(idx_list)
+    return np.concatenate(embeddings, axis=0), np.array(idx_list)
 
 
-def save_embeddings(output_path: Path, X, y, indices):
+def save_embeddings(output_path: Path, X, indices, **extra_arrays):
     """Save cached embeddings to disk."""
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    np.savez(output_path, X=X, y=y, indices=indices)
+    payload = {"X": X, "indices": indices}
+    payload.update(extra_arrays)
+    np.savez(output_path, **payload)
     print(f"Embeddings saved to: {output_path}")
 
 
@@ -198,21 +213,18 @@ def main():
 
     device = "mps" if torch.backends.mps.is_available() else "cuda" if torch.cuda.is_available() else "cpu"
     dataset = load_dataset()
-    target_indices, melanoma_set, label_by_index = load_indices()
-    print(f"Total images: {len(target_indices)} (melanoma: {len(melanoma_set)}, nevus: {len(target_indices) - len(melanoma_set)})")
+    print(f"Embedding full dataset: {len(dataset)} images")
 
     model, preprocess, _ = load_biomedclip(device)
-    X, y, indices = extract_embeddings(
+    X, indices = extract_embeddings(
         model=model,
         preprocess=preprocess,
         device=device,
         dataset=dataset,
-        target_indices=target_indices,
-        label_by_index=label_by_index,
         batch_size=args.batch_size,
     )
     print(f"Embeddings shape: {X.shape}")
-    save_embeddings(Path(args.output), X, y, indices)
+    save_embeddings(Path(args.output), X, indices)
 
 
 if __name__ == "__main__":

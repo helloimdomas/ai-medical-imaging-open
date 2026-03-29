@@ -10,11 +10,13 @@ existing results and embedding output paths.
 import argparse
 from pathlib import Path
 
+import numpy as np
+
 from biomedclip_embeddings import (
     extract_embeddings,
     load_biomedclip,
     load_dataset,
-    load_indices,
+    load_label_selection,
     save_embeddings,
     zero_shot_classify,
 )
@@ -40,8 +42,8 @@ def main():
 
     device = "mps" if torch.backends.mps.is_available() else "cuda" if torch.cuda.is_available() else "cpu"
     dataset = load_dataset()
-    target_indices, melanoma_set, label_by_index = load_indices()
-    print(f"Total images: {len(target_indices)} (melanoma: {len(melanoma_set)}, nevus: {len(target_indices) - len(melanoma_set)})")
+    target_indices, melanoma_set, _ = load_label_selection()
+    print(f"Label-selected images: {len(target_indices)} (melanoma: {len(melanoma_set)}, benign: {len(target_indices) - len(melanoma_set)})")
 
     model, preprocess, tokenizer = load_biomedclip(device)
     zero_shot_results = zero_shot_classify(
@@ -55,21 +57,20 @@ def main():
         batch_size=args.zero_shot_batch_size,
     )
 
-    X, y, indices = extract_embeddings(
+    X, indices = extract_embeddings(
         model=model,
         preprocess=preprocess,
         device=device,
         dataset=dataset,
         target_indices=target_indices,
-        label_by_index=label_by_index,
         batch_size=args.batch_size,
     )
     print(f"Embeddings shape: {X.shape}")
 
     embeddings_path = SCRIPT_DIR / "embeddings" / "biomedclip_embeddings.npz"
-    save_embeddings(embeddings_path, X, y, indices)
+    save_embeddings(embeddings_path, X, indices)
 
-    results = train_and_evaluate(X, y, indices)
+    results = train_and_evaluate(X, np.array([1 if idx in melanoma_set else 0 for idx in indices]), indices)
     print_best_result(results)
 
     best_name, best_metrics = max(results.items(), key=lambda item: item[1]["test_accuracy"])

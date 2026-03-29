@@ -1,0 +1,32 @@
+{
+  "total": 10,
+  "accuracy": 80.0,
+  "pred_counts": {
+    "nevus": 8,
+    "melanoma": 2,
+    "unknown": 0
+  },
+  "run_id": "closed_binary__deterministic",
+  "timestamp": "2026-03-29T11:17:57.551959",
+  "model": "llama3.2-vision",
+  "prompt_id": "closed_binary",
+  "parameter_id": "deterministic",
+  "options": {
+    "temperature": 0.0,
+    "top_p": 0.9,
+    "num_predict": 160
+  },
+  "target_label": "nevus",
+  "target_indices": [
+    33,
+    171,
+    224,
+    329,
+    354,
+    355,
+    356,
+    390,
+    394,
+    685
+  ]
+}

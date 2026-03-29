@@ -1,0 +1,54 @@
+model: "llama3.2-vision"
+target_label: "mixed"
+
+# Shared held-out SVM failures from both BiomedCLIP and MedSigLIP.
+target_indices:
+  - 572
+  - 2152
+  - 1498
+  - 1056
+  - 634
+  - 1629
+  - 1670
+  - 1754
+  - 1026
+  - 1671
+  - 1230
+  - 1641
+  - 1507
+  - 646
+  - 2341
+  - 2334
+  - 1737
+  - 1413
+  - 913
+  - 1845
+  - 1748
+  - 1076
+  - 518
+  - 184
+  - 1923
+  - 1669
+  - 1931
+  - 2049
+  - 1615
+  - 1741
+  - 394
+  - 99
+  - 2442
+  - 622
+  - 788
+
+prompts:
+  closed_binary:
+    description: "Binary melanoma vs benign nevus"
+    prompt: |
+      You are a dermatopathologist examining a biopsy. This lesion is either MELANOMA or a BENIGN NEVUS. Describe the key histological features in 2-3 sentences and state your diagnosis. Answer format: Description. Diagnosis.
+
+parameter_sets:
+  deterministic:
+    description: "Low-variance baseline"
+    options:
+      temperature: 0.0
+      top_p: 0.9
+      num_predict: 160

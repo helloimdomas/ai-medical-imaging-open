@@ -33,6 +33,10 @@ class AblationRun:
     options: dict
 
 
+def sanitize_model_name(model: str) -> str:
+    return re.sub(r"[^A-Za-z0-9._-]+", "_", model).strip("_")
+
+
 def load_config(path: Path) -> dict:
     with open(path) as f:
         return yaml.safe_load(f)
@@ -114,7 +118,16 @@ def main():
 
     parser = argparse.ArgumentParser(description="Run MedGemma prompt/parameter ablations")
     parser.add_argument("--config", default=str(DEFAULT_CONFIG), help="YAML config path")
+    parser.add_argument("--model", help="Override the model name from the YAML config")
     parser.add_argument("--run-id", help="Run only one prompt/parameter combination")
+    parser.add_argument("--prompt-id", help="Run only one prompt configuration from the YAML config")
+    parser.add_argument("--parameter-id", help="Run only one parameter set from the YAML config")
+    parser.add_argument(
+        "--output-root",
+        help="Custom results directory. By default, the config model keeps the legacy "
+        "results/medgemma_ablation path and model overrides are saved under "
+        "results/ollama_ablation/<model>/",
+    )
     parser.add_argument("--limit-runs", type=int, default=-1, help="Limit number of combinations for testing")
     args = parser.parse_args()
 
@@ -122,17 +135,29 @@ def main():
     config = load_config(config_path)
     dataset = load_dataset()
     runs = build_runs(config)
+    if args.prompt_id:
+        runs = [run for run in runs if run.prompt_id == args.prompt_id]
+    if args.parameter_id:
+        runs = [run for run in runs if run.parameter_id == args.parameter_id]
     if args.run_id:
         runs = [run for run in runs if run.run_id == args.run_id]
     if args.limit_runs > 0:
         runs = runs[:args.limit_runs]
-
-    output_root = SCRIPT_DIR / "results" / "medgemma_ablation"
-    output_root.mkdir(parents=True, exist_ok=True)
+    if not runs:
+        raise ValueError("No runs matched the requested filters.")
 
     target_indices = config["target_indices"]
     expected_label = config["target_label"]
-    model = config["model"]
+    config_model = config["model"]
+    model = args.model or config_model
+
+    if args.output_root:
+        output_root = Path(args.output_root)
+    elif config_path.resolve() == DEFAULT_CONFIG.resolve() and model == config_model:
+        output_root = SCRIPT_DIR / "results" / "medgemma_ablation"
+    else:
+        output_root = SCRIPT_DIR / "results" / "ollama_ablation" / sanitize_model_name(model)
+    output_root.mkdir(parents=True, exist_ok=True)
 
     all_summaries = []
 

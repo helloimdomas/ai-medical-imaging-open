@@ -1,58 +1,65 @@
 {
   "model": "MedSigLIP-448",
   "embedding_dim": 1152,
-  "n_samples": 920,
+  "n_samples": 913,
   "supervised": {
     "LogisticRegression": {
-      "cv_accuracy": 0.720113991542563,
-      "cv_std": 0.03365943121586472,
-      "test_accuracy": 0.7065217391304348,
-      "sensitivity": 0.6935483870967742,
-      "specificity": 0.7333333333333333,
+      "cv_accuracy": 0.715068493150685,
+      "cv_std": 0.029571278280716276,
+      "test_accuracy": 0.639344262295082,
+      "sensitivity": 0.6583333333333333,
+      "specificity": 0.6031746031746031,
       "confusion_matrix": [
         [
-          44,
-          16
+          38,
+          25
         ],
         [
-          38,
-          86
+          41,
+          79
         ]
       ]
     },
     "SVM (RBF)": {
-      "cv_accuracy": 0.7486394557823128,
-      "cv_std": 0.024724873259028887,
-      "test_accuracy": 0.7717391304347826,
-      "sensitivity": 0.75,
-      "specificity": 0.8166666666666667,
+      "cv_accuracy": 0.747945205479452,
+      "cv_std": 0.03195042134161809,
+      "test_accuracy": 0.726775956284153,
+      "sensitivity": 0.7583333333333333,
+      "specificity": 0.6666666666666666,
       "confusion_matrix": [
         [
-          49,
-          11
+          42,
+          21
         ],
         [
-          31,
-          93
+          29,
+          91
         ]
       ]
     },
     "RandomForest": {
-      "cv_accuracy": 0.732377275234418,
-      "cv_std": 0.02518579641162943,
-      "test_accuracy": 0.7554347826086957,
-      "sensitivity": 0.9274193548387096,
-      "specificity": 0.4,
+      "cv_accuracy": 0.752054794520548,
+      "cv_std": 0.04049793287423145,
+      "test_accuracy": 0.7213114754098361,
+      "sensitivity": 0.8833333333333333,
+      "specificity": 0.4126984126984127,
       "confusion_matrix": [
         [
-          24,
-          36
+          26,
+          37
         ],
         [
-          9,
-          115
+          14,
+          106
         ]
       ]
     }
-  }
+  },
+  "labels_path": "/Users/d/Documents/ai-medical-imaging-open/captions/captions_cleaned_labeled.jsonl",
+  "label_counts": {
+    "MELANOMA": 597,
+    "NEVUS": 263,
+    "SPITZ_TUMOR": 53
+  },
+  "spitz_treated_as_benign": true
 }

@@ -2,9 +2,10 @@
 """
 balanced_accuracy.py - Evaluate classifiers with balanced class distribution.
 
-The original dataset has 618 melanoma vs 302 nevus (2:1 ratio), which can bias
-accuracy metrics. This script randomly samples equal numbers from each class
-to compute a fair accuracy comparison.
+The dataset is imbalanced toward melanoma. This script evaluates models on a
+balanced subset by taking all benign cases (NEVUS + optional SPITZ_TUMOR) and
+sampling the same number of melanoma cases, then averaging across repeated
+trials.
 
 Usage:
     python balanced_accuracy.py
@@ -15,7 +16,7 @@ import numpy as np
 from pathlib import Path
 from sklearn.metrics import accuracy_score
 
-from train_embedding_classifier import get_classifiers
+from train_embedding_classifier import filter_labeled_embeddings, get_classifiers, load_label_map
 
 SCRIPT_DIR = Path(__file__).parent
 RANDOM_SEED = 42
@@ -23,16 +24,25 @@ N_TRIALS = 10  # Number of random sampling trials to average
 
 def load_data():
     """Load embeddings and captions."""
-    biomedclip = np.load(SCRIPT_DIR / "embeddings" / "biomedclip_embeddings.npz")
-    medsiglip = np.load(SCRIPT_DIR / "embeddings" / "medsiglip_embeddings.npz")
+    biomedclip = np.load(SCRIPT_DIR / "embeddings" / "biomedclip_embeddings.npz", allow_pickle=True)
+    medsiglip = np.load(SCRIPT_DIR / "embeddings" / "medsiglip_embeddings.npz", allow_pickle=True)
 
     X_biomedclip = biomedclip["X"]
-    y = biomedclip["y"]
     indices = biomedclip["indices"]
     X_medsiglip = medsiglip["X"]
 
-    if not np.array_equal(y, medsiglip["y"]) or not np.array_equal(indices, medsiglip["indices"]):
-        raise ValueError("BiomedCLIP and MedSigLIP embeddings do not share the same labels/indices")
+    if not np.array_equal(indices, medsiglip["indices"]):
+        raise ValueError("BiomedCLIP and MedSigLIP embeddings do not share the same indices")
+
+    label_by_index, diagnosis_by_index, _ = load_label_map(
+        SCRIPT_DIR / "captions" / "captions_cleaned_labeled.jsonl",
+        include_spitz_as_nevus=True,
+    )
+    X_biomedclip, y, indices, _ = filter_labeled_embeddings(X_biomedclip, indices, label_by_index, diagnosis_by_index)
+    X_medsiglip, _, medsiglip_indices, _ = filter_labeled_embeddings(X_medsiglip, medsiglip["indices"], label_by_index, diagnosis_by_index)
+
+    if not np.array_equal(indices, medsiglip_indices):
+        raise ValueError("Filtered BiomedCLIP and MedSigLIP embeddings do not align")
     
     # Load MedGemma predictions
     medgemma_preds = {}
@@ -61,18 +71,19 @@ def load_data():
 
 
 def balanced_sample(X, y, indices, rng):
-    """Sample equal numbers from each class."""
+    """Take all benign cases and sample the same number of melanoma cases."""
     melanoma_mask = y == 1
     nevus_mask = y == 0
     
     melanoma_indices = np.where(melanoma_mask)[0]
     nevus_indices = np.where(nevus_mask)[0]
     
-    # Sample min(len(melanoma), len(nevus)) from each class
-    n_samples = min(len(melanoma_indices), len(nevus_indices))
-    
+    n_samples = len(nevus_indices)
+    if len(melanoma_indices) < n_samples:
+        raise ValueError("Not enough melanoma cases to match the full benign set.")
+
     mel_sample = rng.choice(melanoma_indices, size=n_samples, replace=False)
-    nev_sample = rng.choice(nevus_indices, size=n_samples, replace=False)
+    nev_sample = nevus_indices
     
     selected = np.concatenate([mel_sample, nev_sample])
     rng.shuffle(selected)
@@ -85,7 +96,7 @@ def evaluate_balanced(n_trials=N_TRIALS):
     print("Loading data...")
     X_biomedclip, X_medsiglip, y, indices, medgemma_preds = load_data()
     
-    print(f"\nOriginal distribution: {sum(y == 1)} melanoma, {sum(y == 0)} nevus")
+    print(f"\nOriginal distribution: {sum(y == 1)} melanoma, {sum(y == 0)} benign (nevus + Spitz)")
     
     # Store results across trials
     results = {
@@ -101,7 +112,7 @@ def evaluate_balanced(n_trials=N_TRIALS):
     for trial in range(n_trials):
         rng = np.random.default_rng(RANDOM_SEED + trial)
         
-        # Balanced sample
+        # Balanced sample: all benign + matched melanoma sample
         X_bio_bal, y_bal, idx_bal = balanced_sample(X_biomedclip, y, indices, rng)
         X_med_bal, _, _ = balanced_sample(X_medsiglip, y, indices, np.random.default_rng(RANDOM_SEED + trial))
         
@@ -141,7 +152,7 @@ def evaluate_balanced(n_trials=N_TRIALS):
     # Print results
     print("\n" + "=" * 60)
     print(f"BALANCED ACCURACY (averaged over {n_trials} trials)")
-    print(f"Each trial uses {sum(y == 0)} samples per class (balanced)")
+    print(f"Each trial uses all {sum(y == 0)} benign samples and {sum(y == 0)} sampled melanomas")
     print("=" * 60)
     
     summary = {}
@@ -191,6 +202,7 @@ def evaluate_balanced(n_trials=N_TRIALS):
     output = {
         "n_trials": n_trials,
         "samples_per_class": int(sum(y == 0)),
+        "sampling_strategy": "all_benign_plus_equal_random_melanoma",
         "balanced_results": summary,
     }
     

@@ -1,31 +1,18 @@
 #!/usr/bin/env python3
 """
-Extract MedSigLIP image embeddings for melanoma vs nevus classification.
+Extract MedSigLIP image embeddings for the full Open-MELON dataset.
 
 Usage:
     uv run --env-file .env python medsiglip_embeddings.py
 """
 
 import argparse
-import json
 from pathlib import Path
 
 import numpy as np
 
 SCRIPT_DIR = Path(__file__).parent
-INDEX_FILE = SCRIPT_DIR / "indices" / "melanoma_nevus_indices.json"
 MODEL_ID = "google/medsiglip-448"
-
-
-def load_indices():
-    """Load ground-truth melanoma/nevus indices."""
-    with open(INDEX_FILE) as f:
-        idx_data = json.load(f)
-
-    target_indices = sorted(idx_data["melanoma"] + idx_data["nevus"])
-    melanoma_set = set(idx_data["melanoma"])
-    label_by_index = {idx: 1 if idx in melanoma_set else 0 for idx in target_indices}
-    return target_indices, melanoma_set, label_by_index
 
 
 def load_dataset():
@@ -59,14 +46,15 @@ def load_medsiglip(device: str):
     return processor, model
 
 
-def extract_embeddings(processor, model, device, dataset, target_indices, label_by_index, batch_size=2):
+def extract_embeddings(processor, model, device, dataset, target_indices=None, batch_size=2):
     """Extract normalized MedSigLIP vision embeddings."""
     import torch
 
     embeddings = []
-    labels = []
     idx_list = []
     vision_model = model.vision_model
+    if target_indices is None:
+        target_indices = list(range(len(dataset)))
 
     print(f"Extracting embeddings for {len(target_indices)} images...")
 
@@ -81,20 +69,21 @@ def extract_embeddings(processor, model, device, dataset, target_indices, label_
             batch_embeddings = batch_embeddings / batch_embeddings.norm(dim=-1, keepdim=True)
 
         embeddings.append(batch_embeddings.cpu().numpy())
-        labels.extend(label_by_index[idx] for idx in batch_indices)
         idx_list.extend(batch_indices)
 
         processed = start + len(batch_indices)
         if processed % 50 == 0 or processed == len(target_indices):
             print(f"  [{processed}/{len(target_indices)}] extracted")
 
-    return np.concatenate(embeddings, axis=0), np.array(labels), np.array(idx_list)
+    return np.concatenate(embeddings, axis=0), np.array(idx_list)
 
 
-def save_embeddings(output_path: Path, X, y, indices):
+def save_embeddings(output_path: Path, X, indices, **extra_arrays):
     """Save cached embeddings to disk."""
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    np.savez(output_path, X=X, y=y, indices=indices)
+    payload = {"X": X, "indices": indices}
+    payload.update(extra_arrays)
+    np.savez(output_path, **payload)
     print(f"Embeddings saved to: {output_path}")
 
 
@@ -124,21 +113,18 @@ def main():
 
     device = "mps" if torch.backends.mps.is_available() else "cuda" if torch.cuda.is_available() else "cpu"
     dataset = load_dataset()
-    target_indices, melanoma_set, label_by_index = load_indices()
-    print(f"Total images: {len(target_indices)} (melanoma: {len(melanoma_set)}, nevus: {len(target_indices) - len(melanoma_set)})")
+    print(f"Embedding full dataset: {len(dataset)} images")
 
     processor, model = load_medsiglip(device)
-    X, y, indices = extract_embeddings(
+    X, indices = extract_embeddings(
         processor=processor,
         model=model,
         device=device,
         dataset=dataset,
-        target_indices=target_indices,
-        label_by_index=label_by_index,
         batch_size=args.batch_size,
     )
     print(f"Embeddings shape: {X.shape}")
-    save_embeddings(Path(args.output), X, y, indices)
+    save_embeddings(Path(args.output), X, indices)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,16 @@
+{
+  "timestamp": "2026-03-29T12:10:58.183439",
+  "model": "gemma3:12b-it-qat",
+  "split": "train",
+  "index": 0,
+  "pmc_id": "PMC10009067",
+  "figure_id": "ac-2021-00143-0020f5",
+  "panel_id": "a",
+  "fig_quality": "high_quality",
+  "caption": "Small bowel polyps showing malignant cells located at the lamina propria and submucosa. The image is stained with hematoxylin and eosin (H&E) at \u00d7 4 magnification.",
+  "prompt": "Describe the morphology of this lesion or pathology image and provide a brief diagnostic impression. Be concise and medically specific.",
+  "temperature": 0.1,
+  "num_predict": 160,
+  "elapsed_s": 13.816,
+  "response": "**Morphology:**\n\nThe image shows a section of intestinal mucosa with prominent crypt hyperplasia and elongated crypts. The lamina propria exhibits increased cellularity with a mixed inflammatory infiltrate (lymphocytes, plasma cells). Goblet cells are abundant. There is mild architectural distortion.\n\n**Diagnostic Impression:**\n\nLikely **Colitis, possibly lymphocytic colitis or collagenous colitis**. Further investigation (e.g., immunohistochemistry, special stains) may be needed to differentiate between subtypes.\n\n\n\n**Disclaimer:** *This is an interpretation based solely on the provided image and should not be considered a definitive diagnosis. A complete clinical and pathological evaluation is necessary for accurate diagnosis.*"
+}
