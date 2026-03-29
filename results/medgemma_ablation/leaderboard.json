@@ -1,0 +1,410 @@
+[
+  {
+    "total": 10,
+    "accuracy": 20.0,
+    "pred_counts": {
+      "nevus": 2,
+      "melanoma": 8,
+      "unknown": 0
+    },
+    "run_id": "closed_binary__deterministic",
+    "timestamp": "2026-03-29T10:09:19.159193",
+    "model": "dcarrascosa/medgemma-1.5-4b-it:Q4_K_M",
+    "prompt_id": "closed_binary",
+    "prompt_description": "Binary melanoma vs benign nevus",
+    "parameter_id": "deterministic",
+    "parameter_description": "Low-variance baseline",
+    "options": {
+      "temperature": 0.0,
+      "top_p": 0.9,
+      "num_predict": 160
+    },
+    "target_label": "nevus",
+    "target_indices": [
+      33,
+      171,
+      224,
+      329,
+      354,
+      355,
+      356,
+      390,
+      394,
+      685
+    ]
+  },
+  {
+    "total": 10,
+    "accuracy": 10.0,
+    "pred_counts": {
+      "nevus": 1,
+      "melanoma": 5,
+      "unknown": 4
+    },
+    "run_id": "open_descriptive__deterministic",
+    "timestamp": "2026-03-29T10:03:04.493718",
+    "model": "dcarrascosa/medgemma-1.5-4b-it:Q4_K_M",
+    "prompt_id": "open_descriptive",
+    "prompt_description": "Open prompt with diagnosis request",
+    "parameter_id": "deterministic",
+    "parameter_description": "Low-variance baseline",
+    "options": {
+      "temperature": 0.0,
+      "top_p": 0.9,
+      "num_predict": 160
+    },
+    "target_label": "nevus",
+    "target_indices": [
+      33,
+      171,
+      224,
+      329,
+      354,
+      355,
+      356,
+      390,
+      394,
+      685
+    ]
+  },
+  {
+    "total": 10,
+    "accuracy": 10.0,
+    "pred_counts": {
+      "nevus": 1,
+      "melanoma": 8,
+      "unknown": 1
+    },
+    "run_id": "closed_binary__mild_sampling",
+    "timestamp": "2026-03-29T10:10:17.950468",
+    "model": "dcarrascosa/medgemma-1.5-4b-it:Q4_K_M",
+    "prompt_id": "closed_binary",
+    "prompt_description": "Binary melanoma vs benign nevus",
+    "parameter_id": "mild_sampling",
+    "parameter_description": "Small amount of sampling",
+    "options": {
+      "temperature": 0.2,
+      "top_p": 0.9,
+      "num_predict": 160
+    },
+    "target_label": "nevus",
+    "target_indices": [
+      33,
+      171,
+      224,
+      329,
+      354,
+      355,
+      356,
+      390,
+      394,
+      685
+    ]
+  },
+  {
+    "total": 10,
+    "accuracy": 10.0,
+    "pred_counts": {
+      "nevus": 1,
+      "melanoma": 9,
+      "unknown": 0
+    },
+    "run_id": "closed_binary__moderate_sampling",
+    "timestamp": "2026-03-29T10:11:20.244014",
+    "model": "dcarrascosa/medgemma-1.5-4b-it:Q4_K_M",
+    "prompt_id": "closed_binary",
+    "prompt_description": "Binary melanoma vs benign nevus",
+    "parameter_id": "moderate_sampling",
+    "parameter_description": "Higher sampling",
+    "options": {
+      "temperature": 0.5,
+      "top_p": 0.95,
+      "num_predict": 160
+    },
+    "target_label": "nevus",
+    "target_indices": [
+      33,
+      171,
+      224,
+      329,
+      354,
+      355,
+      356,
+      390,
+      394,
+      685
+    ]
+  },
+  {
+    "total": 10,
+    "accuracy": 10.0,
+    "pred_counts": {
+      "nevus": 1,
+      "melanoma": 9,
+      "unknown": 0
+    },
+    "run_id": "closed_binary_strict__mild_sampling",
+    "timestamp": "2026-03-29T10:13:14.431431",
+    "model": "dcarrascosa/medgemma-1.5-4b-it:Q4_K_M",
+    "prompt_id": "closed_binary_strict",
+    "prompt_description": "Binary prompt with stricter label phrasing",
+    "parameter_id": "mild_sampling",
+    "parameter_description": "Small amount of sampling",
+    "options": {
+      "temperature": 0.2,
+      "top_p": 0.9,
+      "num_predict": 160
+    },
+    "target_label": "nevus",
+    "target_indices": [
+      33,
+      171,
+      224,
+      329,
+      354,
+      355,
+      356,
+      390,
+      394,
+      685
+    ]
+  },
+  {
+    "total": 10,
+    "accuracy": 0.0,
+    "pred_counts": {
+      "nevus": 0,
+      "melanoma": 4,
+      "unknown": 6
+    },
+    "run_id": "open_descriptive__mild_sampling",
+    "timestamp": "2026-03-29T10:04:01.860660",
+    "model": "dcarrascosa/medgemma-1.5-4b-it:Q4_K_M",
+    "prompt_id": "open_descriptive",
+    "prompt_description": "Open prompt with diagnosis request",
+    "parameter_id": "mild_sampling",
+    "parameter_description": "Small amount of sampling",
+    "options": {
+      "temperature": 0.2,
+      "top_p": 0.9,
+      "num_predict": 160
+    },
+    "target_label": "nevus",
+    "target_indices": [
+      33,
+      171,
+      224,
+      329,
+      354,
+      355,
+      356,
+      390,
+      394,
+      685
+    ]
+  },
+  {
+    "total": 10,
+    "accuracy": 0.0,
+    "pred_counts": {
+      "nevus": 0,
+      "melanoma": 5,
+      "unknown": 5
+    },
+    "run_id": "open_descriptive__moderate_sampling",
+    "timestamp": "2026-03-29T10:04:58.049882",
+    "model": "dcarrascosa/medgemma-1.5-4b-it:Q4_K_M",
+    "prompt_id": "open_descriptive",
+    "prompt_description": "Open prompt with diagnosis request",
+    "parameter_id": "moderate_sampling",
+    "parameter_description": "Higher sampling",
+    "options": {
+      "temperature": 0.5,
+      "top_p": 0.95,
+      "num_predict": 160
+    },
+    "target_label": "nevus",
+    "target_indices": [
+      33,
+      171,
+      224,
+      329,
+      354,
+      355,
+      356,
+      390,
+      394,
+      685
+    ]
+  },
+  {
+    "total": 10,
+    "accuracy": 0.0,
+    "pred_counts": {
+      "nevus": 0,
+      "melanoma": 6,
+      "unknown": 4
+    },
+    "run_id": "open_brief__deterministic",
+    "timestamp": "2026-03-29T10:06:05.638998",
+    "model": "dcarrascosa/medgemma-1.5-4b-it:Q4_K_M",
+    "prompt_id": "open_brief",
+    "prompt_description": "Short open prompt",
+    "parameter_id": "deterministic",
+    "parameter_description": "Low-variance baseline",
+    "options": {
+      "temperature": 0.0,
+      "top_p": 0.9,
+      "num_predict": 160
+    },
+    "target_label": "nevus",
+    "target_indices": [
+      33,
+      171,
+      224,
+      329,
+      354,
+      355,
+      356,
+      390,
+      394,
+      685
+    ]
+  },
+  {
+    "total": 10,
+    "accuracy": 0.0,
+    "pred_counts": {
+      "nevus": 0,
+      "melanoma": 4,
+      "unknown": 6
+    },
+    "run_id": "open_brief__mild_sampling",
+    "timestamp": "2026-03-29T10:07:12.233273",
+    "model": "dcarrascosa/medgemma-1.5-4b-it:Q4_K_M",
+    "prompt_id": "open_brief",
+    "prompt_description": "Short open prompt",
+    "parameter_id": "mild_sampling",
+    "parameter_description": "Small amount of sampling",
+    "options": {
+      "temperature": 0.2,
+      "top_p": 0.9,
+      "num_predict": 160
+    },
+    "target_label": "nevus",
+    "target_indices": [
+      33,
+      171,
+      224,
+      329,
+      354,
+      355,
+      356,
+      390,
+      394,
+      685
+    ]
+  },
+  {
+    "total": 10,
+    "accuracy": 0.0,
+    "pred_counts": {
+      "nevus": 0,
+      "melanoma": 4,
+      "unknown": 6
+    },
+    "run_id": "open_brief__moderate_sampling",
+    "timestamp": "2026-03-29T10:08:22.037703",
+    "model": "dcarrascosa/medgemma-1.5-4b-it:Q4_K_M",
+    "prompt_id": "open_brief",
+    "prompt_description": "Short open prompt",
+    "parameter_id": "moderate_sampling",
+    "parameter_description": "Higher sampling",
+    "options": {
+      "temperature": 0.5,
+      "top_p": 0.95,
+      "num_predict": 160
+    },
+    "target_label": "nevus",
+    "target_indices": [
+      33,
+      171,
+      224,
+      329,
+      354,
+      355,
+      356,
+      390,
+      394,
+      685
+    ]
+  },
+  {
+    "total": 10,
+    "accuracy": 0.0,
+    "pred_counts": {
+      "nevus": 0,
+      "melanoma": 10,
+      "unknown": 0
+    },
+    "run_id": "closed_binary_strict__deterministic",
+    "timestamp": "2026-03-29T10:12:17.487652",
+    "model": "dcarrascosa/medgemma-1.5-4b-it:Q4_K_M",
+    "prompt_id": "closed_binary_strict",
+    "prompt_description": "Binary prompt with stricter label phrasing",
+    "parameter_id": "deterministic",
+    "parameter_description": "Low-variance baseline",
+    "options": {
+      "temperature": 0.0,
+      "top_p": 0.9,
+      "num_predict": 160
+    },
+    "target_label": "nevus",
+    "target_indices": [
+      33,
+      171,
+      224,
+      329,
+      354,
+      355,
+      356,
+      390,
+      394,
+      685
+    ]
+  },
+  {
+    "total": 10,
+    "accuracy": 0.0,
+    "pred_counts": {
+      "nevus": 0,
+      "melanoma": 10,
+      "unknown": 0
+    },
+    "run_id": "closed_binary_strict__moderate_sampling",
+    "timestamp": "2026-03-29T10:14:12.038411",
+    "model": "dcarrascosa/medgemma-1.5-4b-it:Q4_K_M",
+    "prompt_id": "closed_binary_strict",
+    "prompt_description": "Binary prompt with stricter label phrasing",
+    "parameter_id": "moderate_sampling",
+    "parameter_description": "Higher sampling",
+    "options": {
+      "temperature": 0.5,
+      "top_p": 0.95,
+      "num_predict": 160
+    },
+    "target_label": "nevus",
+    "target_indices": [
+      33,
+      171,
+      224,
+      329,
+      354,
+      355,
+      356,
+      390,
+      394,
+      685
+    ]
+  }
+]

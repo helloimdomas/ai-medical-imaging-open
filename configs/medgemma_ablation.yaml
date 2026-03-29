@@ -1,0 +1,59 @@
+model: "dcarrascosa/medgemma-1.5-4b-it:Q4_K_M"
+target_label: "nevus"
+
+# Default fixed subset for prompt ablation. These are kept in config so you can
+# replace them without editing code.
+target_indices:
+  - 33
+  - 171
+  - 224
+  - 329
+  - 354
+  - 355
+  - 356
+  - 390
+  - 394
+  - 685
+
+prompts:
+  open_descriptive:
+    description: "Open prompt with diagnosis request"
+    prompt: |
+      You are a dermatopathologist examining a biopsy. Describe the key histological features in 2-3 sentences and then give your best diagnosis. Answer format: Description. Diagnosis.
+
+  open_brief:
+    description: "Short open prompt"
+    prompt: |
+      Describe what you see and give the most likely diagnosis. Answer format: Description. Diagnosis.
+
+  closed_binary:
+    description: "Binary melanoma vs benign nevus"
+    prompt: |
+      You are a dermatopathologist examining a biopsy. This lesion is either MELANOMA or a BENIGN NEVUS. Describe the key histological features in 2-3 sentences and state your diagnosis. Answer format: Description. Diagnosis.
+
+  closed_binary_strict:
+    description: "Binary prompt with stricter label phrasing"
+    prompt: |
+      Classify this biopsy as exactly one of: MELANOMA or BENIGN NEVUS. First describe the most important histological features in 1-2 sentences. Then output the final diagnosis using exactly one of those two labels. Answer format: Description. Final diagnosis: MELANOMA or BENIGN NEVUS.
+
+parameter_sets:
+  deterministic:
+    description: "Low-variance baseline"
+    options:
+      temperature: 0.0
+      top_p: 0.9
+      num_predict: 160
+
+  mild_sampling:
+    description: "Small amount of sampling"
+    options:
+      temperature: 0.2
+      top_p: 0.9
+      num_predict: 160
+
+  moderate_sampling:
+    description: "Higher sampling"
+    options:
+      temperature: 0.5
+      top_p: 0.95
+      num_predict: 160

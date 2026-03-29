@@ -2,7 +2,7 @@
 
 Internal project log for tracking what has been tried, what the current results mean, and what should happen next.
 
-Last updated: 2026-03-28
+Last updated: 2026-03-29
 
 ## Current project question
 
@@ -194,6 +194,64 @@ Interpretation:
 - BiomedCLIP remains strong under balanced sampling.
 - MedSigLIP is stronger than BiomedCLIP on the balanced benchmark, with SVM as the best current configuration.
 
+### 6. MedGemma prompt/parameter ablation on fixed nevus subset
+
+Source:
+
+- `results/medgemma_ablation/leaderboard.json`
+
+Setup:
+
+- Model: `dcarrascosa/medgemma-1.5-4b-it:Q4_K_M`
+- Task: classify the same fixed set of 10 nevus images
+- Subset indices:
+  - 33, 171, 224, 329, 354, 355, 356, 390, 394, 685
+- Prompt families:
+  - `open_descriptive`
+  - `open_brief`
+  - `closed_binary`
+  - `closed_binary_strict`
+- Decoding settings:
+  - deterministic
+  - mild_sampling
+  - moderate_sampling
+
+Top results:
+
+- `closed_binary__deterministic`
+  - Accuracy: 20.0%
+  - Predictions: 2 nevus, 8 melanoma, 0 unknown
+- `open_descriptive__deterministic`
+  - Accuracy: 10.0%
+  - Predictions: 1 nevus, 5 melanoma, 4 unknown
+- `closed_binary__mild_sampling`
+  - Accuracy: 10.0%
+  - Predictions: 1 nevus, 8 melanoma, 1 unknown
+
+Worst results:
+
+- `closed_binary_strict__deterministic`
+  - Accuracy: 0.0%
+  - Predictions: 0 nevus, 10 melanoma, 0 unknown
+- `closed_binary_strict__moderate_sampling`
+  - Accuracy: 0.0%
+  - Predictions: 0 nevus, 10 melanoma, 0 unknown
+- Several open-prompt variants also reached 0.0%, usually by predicting melanoma or unknown for every case.
+
+Interpretation:
+
+- Prompting and decoding changes did not rescue MedGemma on nevus-heavy evaluation.
+- Closed prompts were slightly better than open prompts, but still very poor.
+- The strongest run still only reached 20% accuracy on 10 nevus images.
+- Stricter binary wording made the melanoma bias worse, not better.
+- Temperature increases did not improve performance; if anything, they made outputs less reliable.
+
+Conclusion from this ablation:
+
+- MedGemma's failure is not mainly a prompt-engineering problem.
+- On this subset, the model is strongly biased toward melanoma even when all test images are nevus.
+- This supports the broader result that embedding-based approaches are better than caption-generation for this task.
+
 ## Current best result
 
 Best current model:
@@ -217,6 +275,7 @@ Why this matters:
 3. Embedding-based approaches clearly outperform MedGemma on this task.
 4. MedSigLIP embeddings appear more useful than BiomedCLIP embeddings for melanoma vs nevus classification in this benchmark.
 5. Among tested classifiers, SVM is currently the strongest and most balanced choice for both embedding models.
+6. Prompt and decoding ablations do not materially improve MedGemma on a fixed nevus subset; the melanoma bias remains dominant.
 
 ## Important caveats
 
@@ -225,6 +284,7 @@ Why this matters:
 3. Current classifier results depend on one train/test split for the main supervised result files.
 4. Balanced accuracy is more trustworthy than raw accuracy for comparing methods here.
 5. MedSigLIP does not currently have a zero-shot result in the repo; the comparison is supervised embedding quality only.
+6. The 10-image nevus subset used for the MedGemma ablation is a practical diagnostic set, not a fully audited benchmark.
 
 ## Engineering notes
 
