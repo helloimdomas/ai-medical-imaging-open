@@ -2,7 +2,7 @@
 name = "ai-medical-imaging-open"
 version = "0.1.0"
 description = "Reproducible Open-MELON melanoma classification experiments"
-readme = "REPO_RULES.md"
+readme = "README.md"
 requires-python = ">=3.11,<3.13"
 dependencies = [
   "datasets>=4.1.0",

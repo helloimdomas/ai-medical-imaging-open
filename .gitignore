@@ -1,1 +1,19 @@
+# Secrets
 .env
+
+# Python
+__pycache__/
+*.pyc
+
+# macOS
+.DS_Store
+
+# LaTeX build artifacts
+poster/*.aux
+poster/*.fdb_latexmk
+poster/*.fls
+poster/*.log
+poster/*.synctex.gz
+
+# Archives
+*.zip

@@ -42,7 +42,7 @@ uv sync --extra embeddings
 
 ## Overview
 
-The goal is to classify histopathology images as either melanoma (malignant) or nevus (benign). The Open-MELON-VL-2.5K dataset on HuggingFace contains 2,499 total images covering various conditions. Since the dataset does not have explicit diagnosis labels, we use keyword matching on the captions to identify melanoma and nevus cases. This filtering produces 920 usable images (618 melanoma, 302 nevus) for our binary classification benchmark.
+The goal is to classify histopathology images as either melanoma (malignant) or nevus (benign). The Open-MELON-VL-2.5K dataset on HuggingFace contains 2,499 total images covering various conditions. Since the dataset does not have explicit diagnosis labels, we use keyword matching on the captions to identify melanoma and nevus cases. This filtering produces 913 usable images (597 melanoma, 263 nevus, 53 Spitz tumor treated as benign) for our binary classification benchmark.
 
 The pipeline works in several stages. First, we run a script that scans all captions and extracts indices for melanoma and nevus cases using keyword matching. Second, we clean the original dataset captions to remove technical information (staining methods, magnification) and keep only visual descriptions. Third, we run MedGemma to generate new captions from the images and classify based on keywords. Finally, we evaluate the generated captions against the cleaned ground truth using RAGAS metrics and compare against BiomedCLIP embeddings.
 
