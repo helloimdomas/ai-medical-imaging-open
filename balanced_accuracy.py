@@ -25,6 +25,16 @@ LABELS_PATH = SCRIPT_DIR / "captions" / "captions_cleaned_labeled.jsonl"
 INCLUDE_SPITZ_AS_NEVUS = True
 OUTPUT_PATH = SCRIPT_DIR / "results" / "balanced_accuracy.json"
 
+
+def _backup_if_exists(path: Path):
+    """Rename existing file with a timestamp suffix to avoid overwriting."""
+    if path.exists():
+        from datetime import datetime
+        ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+        backup = path.with_name(f"{path.stem}_{ts}{path.suffix}")
+        path.rename(backup)
+        print(f"Backed up existing file to: {backup}")
+
 def load_data():
     """Load embeddings and captions."""
     biomedclip = np.load(SCRIPT_DIR / "embeddings" / "biomedclip_embeddings.npz", allow_pickle=True)
@@ -210,6 +220,7 @@ def evaluate_balanced(n_trials=N_TRIALS):
         "balanced_results": summary,
     }
     
+    _backup_if_exists(OUTPUT_PATH)
     with open(OUTPUT_PATH, "w") as f:
         json.dump(output, f, indent=2)
     

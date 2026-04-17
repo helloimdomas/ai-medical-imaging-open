@@ -22,6 +22,15 @@ SCRIPT_DIR = Path(__file__).parent
 DEFAULT_CONFIG = SCRIPT_DIR / "configs" / "medgemma_ablation.yaml"
 
 
+def _backup_if_exists(path: Path):
+    """Rename existing file with a timestamp suffix to avoid overwriting."""
+    if path.exists():
+        ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+        backup = path.with_name(f"{path.stem}_{ts}{path.suffix}")
+        path.rename(backup)
+        print(f"Backed up existing file to: {backup}")
+
+
 @dataclass
 class AblationRun:
     run_id: str
@@ -179,6 +188,7 @@ def main():
         print("=" * 60)
 
         rows = []
+        _backup_if_exists(caption_path)
         with open(caption_path, "w") as f:
             for idx in target_indices:
                 sample = dataset[idx]
@@ -218,6 +228,7 @@ def main():
             }
         )
 
+        _backup_if_exists(summary_path)
         with open(summary_path, "w") as f:
             json.dump(summary, f, indent=2)
 
@@ -226,7 +237,9 @@ def main():
         print(f"Predictions: {summary['pred_counts']}")
 
     all_summaries.sort(key=lambda row: row["accuracy"], reverse=True)
-    with open(output_root / "leaderboard.json", "w") as f:
+    leaderboard_path = output_root / "leaderboard.json"
+    _backup_if_exists(leaderboard_path)
+    with open(leaderboard_path, "w") as f:
         json.dump(all_summaries, f, indent=2)
 
     print("\n" + "=" * 60)

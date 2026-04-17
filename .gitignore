@@ -17,3 +17,5 @@ poster/*.synctex.gz
 
 # Archives
 *.zip
+.github/copilot-instructions.md
+docs/internal/CLAUDE.md

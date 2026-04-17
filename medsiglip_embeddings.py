@@ -78,9 +78,20 @@ def extract_embeddings(processor, model, device, dataset, target_indices=None, b
     return np.concatenate(embeddings, axis=0), np.array(idx_list)
 
 
+def _backup_if_exists(path: Path):
+    """Rename existing file with a timestamp suffix to avoid overwriting."""
+    if path.exists():
+        from datetime import datetime
+        ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+        backup = path.with_name(f"{path.stem}_{ts}{path.suffix}")
+        path.rename(backup)
+        print(f"Backed up existing file to: {backup}")
+
+
 def save_embeddings(output_path: Path, X, indices, **extra_arrays):
     """Save cached embeddings to disk."""
     output_path.parent.mkdir(parents=True, exist_ok=True)
+    _backup_if_exists(output_path)
     payload = {"X": X, "indices": indices}
     payload.update(extra_arrays)
     np.savez(output_path, **payload)
