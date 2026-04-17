@@ -25,18 +25,9 @@ LABELS_PATH = SCRIPT_DIR / "captions" / "captions_cleaned_labeled.jsonl"
 INCLUDE_SPITZ_AS_NEVUS = True
 OUTPUT_PATH = SCRIPT_DIR / "results" / "balanced_accuracy.json"
 
-
-def _backup_if_exists(path: Path):
-    """Rename existing file with a timestamp suffix to avoid overwriting."""
-    if path.exists():
-        from datetime import datetime
-        ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-        backup = path.with_name(f"{path.stem}_{ts}{path.suffix}")
-        path.rename(backup)
-        print(f"Backed up existing file to: {backup}")
+from utils import backup_if_exists
 
 def load_data():
-    """Load embeddings and captions."""
     biomedclip = np.load(SCRIPT_DIR / "embeddings" / "biomedclip_embeddings.npz", allow_pickle=True)
     medsiglip = np.load(SCRIPT_DIR / "embeddings" / "medsiglip_embeddings.npz", allow_pickle=True)
 
@@ -164,10 +155,8 @@ def evaluate_balanced(n_trials=N_TRIALS):
             results[medsiglip_name].append(acc)
     
     # Print results
-    print("\n" + "=" * 60)
-    print(f"BALANCED ACCURACY (averaged over {n_trials} trials)")
+    print(f"\nBALANCED ACCURACY (averaged over {n_trials} trials)")
     print(f"Each trial uses all {sum(y == 0)} benign samples and {sum(y == 0)} sampled melanomas")
-    print("=" * 60)
     
     summary = {}
     for name, accs in results.items():
@@ -177,9 +166,7 @@ def evaluate_balanced(n_trials=N_TRIALS):
         summary[name] = {"mean": mean_acc, "std": std_acc}
     
     # Compare to original imbalanced
-    print("\n" + "=" * 60)
-    print("COMPARISON: Original (imbalanced) vs Balanced")
-    print("=" * 60)
+    print("\nCOMPARISON: Original (imbalanced) vs Balanced")
     
     # Original MedGemma
     orig_mg_preds = [medgemma_preds.get(int(idx), 1) for idx in indices]
@@ -220,7 +207,7 @@ def evaluate_balanced(n_trials=N_TRIALS):
         "balanced_results": summary,
     }
     
-    _backup_if_exists(OUTPUT_PATH)
+    backup_if_exists(OUTPUT_PATH)
     with open(OUTPUT_PATH, "w") as f:
         json.dump(output, f, indent=2)
     

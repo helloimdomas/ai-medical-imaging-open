@@ -26,14 +26,7 @@ SCRIPT_DIR = Path(__file__).parent
 
 
 def main():
-    try:
-        import torch
-    except ImportError as exc:
-        raise ImportError(
-            "Missing embedding dependencies. Run `uv sync --extra embeddings` "
-            "or invoke this script with `uv run --extra embeddings python "
-            "biomedclip_classifier.py`."
-        ) from exc
+    import torch
 
     parser = argparse.ArgumentParser(description="Run the full BiomedCLIP baseline")
     parser.add_argument("--batch-size", type=int, default=16, help="Embedding extraction batch size")
@@ -74,9 +67,7 @@ def main():
     print_best_result(results)
 
     best_name, best_metrics = max(results.items(), key=lambda item: item[1]["test_accuracy"])
-    print("\n" + "=" * 60)
-    print("ZERO-SHOT vs SUPERVISED COMPARISON")
-    print("=" * 60)
+    print("\nZERO-SHOT vs SUPERVISED COMPARISON")
     print(f"Zero-shot:  Acc={zero_shot_results['accuracy'] * 100:.1f}%, Sens={zero_shot_results['sensitivity'] * 100:.1f}%, Spec={zero_shot_results['specificity'] * 100:.1f}%")
     print(f"Supervised: Acc={best_metrics['test_accuracy'] * 100:.1f}%, Sens={best_metrics['sensitivity'] * 100:.1f}%, Spec={best_metrics['specificity'] * 100:.1f}%")
 

@@ -21,14 +21,7 @@ import yaml
 SCRIPT_DIR = Path(__file__).parent
 DEFAULT_CONFIG = SCRIPT_DIR / "configs" / "medgemma_ablation.yaml"
 
-
-def _backup_if_exists(path: Path):
-    """Rename existing file with a timestamp suffix to avoid overwriting."""
-    if path.exists():
-        ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-        backup = path.with_name(f"{path.stem}_{ts}{path.suffix}")
-        path.rename(backup)
-        print(f"Backed up existing file to: {backup}")
+from utils import backup_if_exists
 
 
 @dataclass
@@ -50,11 +43,7 @@ def load_config(path: Path) -> dict:
     with open(path) as f:
         return yaml.safe_load(f)
 
-
-def image_to_base64(pil_image):
-    buf = io.BytesIO()
-    pil_image.save(buf, format="PNG")
-    return base64.b64encode(buf.getvalue()).decode("utf-8")
+from utils import image_to_base64
 
 
 def classify_caption(text: str) -> str:
@@ -116,14 +105,7 @@ def summarize_rows(rows: list[dict], expected_label: str) -> dict:
 
 
 def main():
-    try:
-        import ollama
-    except ImportError as exc:
-        raise ImportError(
-            "Missing captioning dependencies. Run `uv sync --extra captioning` "
-            "or invoke this script with `uv run --extra captioning python "
-            "medgemma_prompt_ablation.py`."
-        ) from exc
+    import ollama
 
     parser = argparse.ArgumentParser(description="Run MedGemma prompt/parameter ablations")
     parser.add_argument("--config", default=str(DEFAULT_CONFIG), help="YAML config path")
@@ -181,14 +163,12 @@ def main():
         caption_path = run_dir / "captions.jsonl"
         summary_path = run_dir / "summary.json"
 
-        print("\n" + "=" * 60)
-        print(f"RUN {run.run_id}")
+        print(f"\nRUN {run.run_id}")
         print(f"Prompt: {run.prompt_description}")
         print(f"Params: {run.parameter_description} | {run.options}")
-        print("=" * 60)
 
         rows = []
-        _backup_if_exists(caption_path)
+        backup_if_exists(caption_path)
         with open(caption_path, "w") as f:
             for idx in target_indices:
                 sample = dataset[idx]
@@ -228,7 +208,7 @@ def main():
             }
         )
 
-        _backup_if_exists(summary_path)
+        backup_if_exists(summary_path)
         with open(summary_path, "w") as f:
             json.dump(summary, f, indent=2)
 
@@ -238,13 +218,11 @@ def main():
 
     all_summaries.sort(key=lambda row: row["accuracy"], reverse=True)
     leaderboard_path = output_root / "leaderboard.json"
-    _backup_if_exists(leaderboard_path)
+    backup_if_exists(leaderboard_path)
     with open(leaderboard_path, "w") as f:
         json.dump(all_summaries, f, indent=2)
 
-    print("\n" + "=" * 60)
-    print("LEADERBOARD")
-    print("=" * 60)
+    print("\nLEADERBOARD")
     for row in all_summaries:
         print(f"{row['run_id']:32s} acc={row['accuracy']:5.1f}% preds={row['pred_counts']}")
 

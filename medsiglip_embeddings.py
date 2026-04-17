@@ -28,14 +28,7 @@ def load_dataset():
 
 def load_medsiglip(device: str):
     """Load MedSigLIP processor and model."""
-    try:
-        from transformers import AutoModel, AutoProcessor
-    except ImportError as exc:
-        raise ImportError(
-            "Missing embedding dependencies. Run `uv sync --extra embeddings` "
-            "or invoke this script with `uv run --extra embeddings --env-file .env "
-            "python medsiglip_embeddings.py`."
-        ) from exc
+    from transformers import AutoModel, AutoProcessor
 
     print("Loading MedSigLIP...")
     processor = AutoProcessor.from_pretrained(MODEL_ID)
@@ -78,20 +71,12 @@ def extract_embeddings(processor, model, device, dataset, target_indices=None, b
     return np.concatenate(embeddings, axis=0), np.array(idx_list)
 
 
-def _backup_if_exists(path: Path):
-    """Rename existing file with a timestamp suffix to avoid overwriting."""
-    if path.exists():
-        from datetime import datetime
-        ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-        backup = path.with_name(f"{path.stem}_{ts}{path.suffix}")
-        path.rename(backup)
-        print(f"Backed up existing file to: {backup}")
+from utils import backup_if_exists
 
 
 def save_embeddings(output_path: Path, X, indices, **extra_arrays):
-    """Save cached embeddings to disk."""
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    _backup_if_exists(output_path)
+    backup_if_exists(output_path)
     payload = {"X": X, "indices": indices}
     payload.update(extra_arrays)
     np.savez(output_path, **payload)
@@ -99,14 +84,7 @@ def save_embeddings(output_path: Path, X, indices, **extra_arrays):
 
 
 def main():
-    try:
-        import torch
-    except ImportError as exc:
-        raise ImportError(
-            "Missing embedding dependencies. Run `uv sync --extra embeddings` "
-            "or invoke this script with `uv run --extra embeddings --env-file .env "
-            "python medsiglip_embeddings.py`."
-        ) from exc
+    import torch
 
     parser = argparse.ArgumentParser(description="Extract MedSigLIP embeddings")
     parser.add_argument(

@@ -85,9 +85,7 @@ def get_classifiers(random_state=42):
 
 def train_and_evaluate(X, y, indices, test_size=0.2, random_state=42):
     """Train classifiers on a shared train/test split and report metrics."""
-    print("\n" + "=" * 60)
-    print("TRAINING CLASSIFIERS")
-    print("=" * 60)
+    print("\nTRAINING CLASSIFIERS")
 
     X_train, X_test, y_train, y_test, _, _ = train_test_split(
         X,
@@ -135,18 +133,10 @@ def train_and_evaluate(X, y, indices, test_size=0.2, random_state=42):
     return results
 
 
-def _backup_if_exists(path: Path):
-    """Rename existing file with a timestamp suffix to avoid overwriting."""
-    if path.exists():
-        from datetime import datetime
-        ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-        backup = path.with_name(f"{path.stem}_{ts}{path.suffix}")
-        path.rename(backup)
-        print(f"Backed up existing file to: {backup}")
+from utils import backup_if_exists
 
 
 def save_results(output_path: Path, model_name: str, X, results, extra_metrics=None):
-    """Save classifier results in the repository's existing JSON format."""
     payload = {
         "model": model_name,
         "embedding_dim": int(X.shape[1]),
@@ -157,7 +147,7 @@ def save_results(output_path: Path, model_name: str, X, results, extra_metrics=N
         payload.update(extra_metrics)
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    _backup_if_exists(output_path)
+    backup_if_exists(output_path)
     with open(output_path, "w") as f:
         json.dump(payload, f, indent=2)
 
@@ -167,9 +157,7 @@ def save_results(output_path: Path, model_name: str, X, results, extra_metrics=N
 def print_best_result(results):
     """Print the best supervised classifier summary."""
     best_name, best_metrics = max(results.items(), key=lambda item: item[1]["test_accuracy"])
-    print("\n" + "=" * 60)
-    print("BEST SUPERVISED CLASSIFIER RESULTS")
-    print("=" * 60)
+    print("\nBEST SUPERVISED CLASSIFIER RESULTS")
     print(f"Best classifier: {best_name}")
     print(f"  Accuracy: {best_metrics['test_accuracy'] * 100:.1f}%")
     print(f"  Sensitivity: {best_metrics['sensitivity'] * 100:.1f}%")

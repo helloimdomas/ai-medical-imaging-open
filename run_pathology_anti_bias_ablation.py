@@ -46,11 +46,7 @@ class RunSpec:
 def sanitize_name(value: str) -> str:
     return re.sub(r"[^A-Za-z0-9._-]+", "_", value).strip("_")
 
-
-def image_to_base64(pil_image):
-    buf = io.BytesIO()
-    pil_image.save(buf, format="PNG")
-    return base64.b64encode(buf.getvalue()).decode("utf-8")
+from utils import image_to_base64
 
 
 def classify_caption(text: str) -> str:
@@ -156,14 +152,7 @@ def summarize_rows(rows: list[dict]) -> dict:
 
 
 def main():
-    try:
-        import ollama
-    except ImportError as exc:
-        raise ImportError(
-            "Missing captioning dependencies. Run `uv sync --extra captioning` "
-            "or invoke this script with `uv run --extra captioning python "
-            "run_pathology_anti_bias_ablation.py`."
-        ) from exc
+    import ollama
 
     parser = argparse.ArgumentParser(description="Run multi-model pathology prompt ablations")
     parser.add_argument("--config", default=str(DEFAULT_CONFIG), help="YAML config path")
@@ -200,13 +189,11 @@ def main():
         caption_path = run_dir / "captions.jsonl"
         summary_path = run_dir / "summary.json"
 
-        print("\n" + "=" * 60)
-        print(f"SUBSET {run.subset_id} | MODEL {run.model}")
+        print(f"\nSUBSET {run.subset_id} | MODEL {run.model}")
         print(f"RUN {run.run_id}")
         print(f"Prompt: {run.prompt_description}")
         print(f"Params: {run.parameter_description} | {run.options}")
         print(f"Indices ({len(run.target_indices)}): {run.target_indices}")
-        print("=" * 60)
 
         rows = []
         with open(caption_path, "w") as f:

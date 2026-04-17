@@ -322,6 +322,7 @@ analyze_failure_themes.py       # Failure theme analysis on shared hard cases
 plot_umap.py                    # UMAP visualization of embedding spaces
 medgemma_prompt_ablation.py     # MedGemma prompt/decoding ablation
 run_pathology_anti_bias_ablation.py  # Anti-bias prompt ablation
+utils.py                            # Shared helpers (backup, etc.)
 
 configs/                        # Prompt and ablation configurations
 captions/                       # Ground truth and generated captions

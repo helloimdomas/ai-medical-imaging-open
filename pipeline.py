@@ -59,13 +59,11 @@ class Caption:
 
 
 def load_config():
-    """Load prompt configs from YAML."""
     with open(CONFIG_FILE) as f:
         return yaml.safe_load(f)["prompts"]
 
 
 def load_indices():
-    """Load melanoma/nevus indices."""
     with open(INDEX_FILE) as f:
         data = json.load(f)
     melanoma_set = set(data["melanoma"])
@@ -86,12 +84,7 @@ def load_cleaned_captions():
             }
     return captions
 
-
-def image_to_base64(pil_image):
-    """Convert PIL image to base64."""
-    buf = io.BytesIO()
-    pil_image.save(buf, format="PNG")
-    return base64.b64encode(buf.getvalue()).decode("utf-8")
+from utils import image_to_base64
 
 
 def strip_confidence(caption: str) -> str:
@@ -332,7 +325,6 @@ Reply ONLY: {{"score": X.XX, "reason": "brief explanation"}}"""
 
 
 def load_done_indices(caption_file: Path) -> set:
-    """Load indices already processed from JSONL."""
     done = set()
     if caption_file.exists():
         with open(caption_file) as f:

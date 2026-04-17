@@ -16,15 +16,7 @@ SCRIPT_DIR = Path(__file__).parent
 INPUT_PATH = SCRIPT_DIR / "results" / "svm_failure_comparison.json"
 OUTPUT_PATH = SCRIPT_DIR / "results" / "failure_theme_analysis.json"
 
-
-def _backup_if_exists(path: Path):
-    """Rename existing file with a timestamp suffix to avoid overwriting."""
-    if path.exists():
-        from datetime import datetime
-        ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-        backup = path.with_name(f"{path.stem}_{ts}{path.suffix}")
-        path.rename(backup)
-        print(f"Backed up existing file to: {backup}")
+from utils import backup_if_exists
 
 THEMES = {
     "acral_or_lentiginous": [r"\bacral\b", r"lentigin", r"\bmatrix\b", r"\bnail\b", r"\bpalm\b", r"\bsole\b"],
@@ -111,7 +103,7 @@ def main():
     ]:
         output["buckets"][bucket] = summarize_bucket(data[bucket])
 
-    _backup_if_exists(OUTPUT_PATH)
+    backup_if_exists(OUTPUT_PATH)
     with open(OUTPUT_PATH, "w") as f:
         json.dump(output, f, indent=2)
 

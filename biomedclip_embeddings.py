@@ -56,14 +56,7 @@ def load_dataset():
 
 def load_biomedclip(device: str):
     """Load BiomedCLIP model, image preprocessor, and tokenizer."""
-    try:
-        import open_clip
-    except ImportError as exc:
-        raise ImportError(
-            "Missing embedding dependencies. Run `uv sync --extra embeddings` "
-            "or invoke this script with `uv run --extra embeddings python "
-            "biomedclip_embeddings.py`."
-        ) from exc
+    import open_clip
 
     print("Loading BiomedCLIP...")
     model, _, preprocess = open_clip.create_model_and_transforms(MODEL_ID)
@@ -78,9 +71,7 @@ def zero_shot_classify(model, preprocess, tokenizer, device, dataset, target_ind
     """Run zero-shot melanoma vs nevus classification for BiomedCLIP."""
     import torch
 
-    print("\n" + "=" * 60)
-    print("ZERO-SHOT CLASSIFICATION")
-    print("=" * 60)
+    print("\nZERO-SHOT CLASSIFICATION")
 
     text_prompts = [
         "a histopathology image of melanoma",
@@ -178,20 +169,12 @@ def extract_embeddings(model, preprocess, device, dataset, target_indices=None, 
     return np.concatenate(embeddings, axis=0), np.array(idx_list)
 
 
-def _backup_if_exists(path: Path):
-    """Rename existing file with a timestamp suffix to avoid overwriting."""
-    if path.exists():
-        from datetime import datetime
-        ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-        backup = path.with_name(f"{path.stem}_{ts}{path.suffix}")
-        path.rename(backup)
-        print(f"Backed up existing file to: {backup}")
+from utils import backup_if_exists
 
 
 def save_embeddings(output_path: Path, X, indices, **extra_arrays):
-    """Save cached embeddings to disk."""
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    _backup_if_exists(output_path)
+    backup_if_exists(output_path)
     payload = {"X": X, "indices": indices}
     payload.update(extra_arrays)
     np.savez(output_path, **payload)
@@ -199,14 +182,7 @@ def save_embeddings(output_path: Path, X, indices, **extra_arrays):
 
 
 def main():
-    try:
-        import torch
-    except ImportError as exc:
-        raise ImportError(
-            "Missing embedding dependencies. Run `uv sync --extra embeddings` "
-            "or invoke this script with `uv run --extra embeddings python "
-            "biomedclip_embeddings.py`."
-        ) from exc
+    import torch
 
     parser = argparse.ArgumentParser(description="Extract BiomedCLIP embeddings")
     parser.add_argument(
