@@ -18,7 +18,7 @@
 
 [Open-MELON-VL-2.5K](https://huggingface.co/datasets/MartiHan/Open-MELON-VL-2.5K) contains 2,499 histopathology images but no explicit diagnosis labels. We use a two-stage process:
 
-**Stage 1 — Initial selection** via keyword matching on original captions to identify candidate melanoma/nevus samples:
+**Stage 1 - Initial selection** via keyword matching on original captions to identify candidate melanoma/nevus samples:
 
 | Rule | Result | Count |
 |---|---|---|
@@ -27,7 +27,7 @@
 | Contains both keywords | **excluded** (ambiguous) | ~110 |
 | Contains neither keyword | **excluded** (other condition) | ~1,429 |
 
-This yields 913 candidate samples. Spitz tumors (53 samples) are classified as benign.
+This yields 913 usable samples: 597 melanoma and 316 benign (263 nevus + 53 Spitz tumors, classified as benign).
 
 **Stage 2 — Gemini label verification:** Each caption is sent to Gemini (gemma-3-27b-it) which assigns a conservative diagnosis label (`MELANOMA`, `NEVUS`, `SPITZ_TUMOR`, `DIFFERENTIAL`, or `OTHER`) based on the full caption context. This second pass validates the keyword-based selection and resolves edge cases where keyword context alone is insufficient. These Gemini-assigned labels are what the embedding classifiers use.
 
@@ -52,9 +52,9 @@ See [`captions/captions_cleaned.jsonl`](captions/captions_cleaned.jsonl) for all
 
 ## Experiments and Results
 
-### Step 1: MedGemma Caption Classification (full dataset, 913 samples)
+### Step 1: MedGemma Caption Classification (913 samples)
 
-[MedGemma-1.5-4B-it](https://ollama.com/dcarrascosa/medgemma-1.5-4b-it:Q4_K_M) (Q4_K_M quantization, via Ollama) generates free-text captions for each image. Classification is by keyword extraction: does the caption contain "melanoma" or "nevus"?
+[MedGemma-1.5-4B-it](https://ollama.com/dcarrascosa/medgemma-1.5-4b-it:Q4_K_M) (Q4_K_M quantization, via Ollama) generates free-text captions for all 913 images. Classification is by keyword extraction: does the caption contain "melanoma" or "nevus"?
 
 Caption quality is evaluated with RAGAS (Retrieval Augmented Generation Assessment), using Gemini as a judge against the cleaned reference captions:
 - Faithfulness (0–1): Are claims in the generated caption supported by the reference?
@@ -94,13 +94,13 @@ MedGemma (binary prompt): *"Melanoma. High. The lesion shows atypical melanocyte
 
 The model confidently calls this benign nevus "melanoma." See [`captions/binary_choice/captions.jsonl`](captions/binary_choice/captions.jsonl), index 43.
 
-### Step 2: Reality Check with Embedding Classifiers
+### Step 2: Embedding Classifiers
 
 Are the images themselves just too hard to classify, or is MedGemma specifically failing? To answer this, we extracted BiomedCLIP embeddings (512-d) and trained supervised classifiers (LogReg, SVM, Random Forest). This reached ~74% balanced accuracy — confirming the images carry enough visual signal.
 
-The course instructor then suggested adding MedSigLIP (768-d embeddings), since MedGemma internally uses MedSigLIP as its vision encoder. If MedGemma's own backbone can separate the classes via embeddings, the failure must be in MedGemma's language generation, not its visual understanding. MedSigLIP + SVM also reached ~74%.
+The course instructor then suggested adding MedSigLIP (1152-d embeddings), since MedGemma internally uses MedSigLIP as its vision encoder. If MedGemma's own backbone can separate the classes via embeddings, the failure must be in MedGemma's language generation, not its visual understanding. MedSigLIP + SVM also reached ~74%.
 
-Each trial samples equal numbers per class (316 per class, matching the minority class). Balanced accuracy is averaged over 10 independent trials.
+Each trial draws a balanced subset of 632 images (all 316 benign + 316 randomly sampled melanoma) and splits 80/20 into ~506 training and ~126 test images. Balanced accuracy is averaged over 10 independent trials.
 
 | Model | Balanced Accuracy | Std |
 |---|---|---|
@@ -142,7 +142,7 @@ No configuration exceeded 10% accuracy. The melanoma bias persists across all pr
 
 ### Step 4: Why Do Both Models Hit the Same ~74% Ceiling?
 
-Both BiomedCLIP-SVM and MedSigLIP-SVM plateau around 74% balanced accuracy. To investigate, we compared their failures on the test set only — the remaining images not used to train the SVMs.
+Both BiomedCLIP-SVM and MedSigLIP-SVM plateau around 74% balanced accuracy. To investigate, we compared their failures on the ~126 test images from a single train/test split.
 
 We found:
 - 35 cases where both models fail
@@ -276,9 +276,12 @@ uv run python balanced_accuracy.py
 
 # 8. Analyze failure themes on shared hard cases
 uv run python analyze_failure_themes.py
+
+# 9. Generate UMAP visualizations
+uv run python plot_umap.py
 ```
 
-All final results are pre-computed in `results/`. Steps 2–5 require model downloads and API keys (see `.env`).
+All final results are pre-computed in `results/`. Steps 2–5 require model downloads and API keys (in `.env`). They will not run without setting the keys and we cannot put private keys in cloud.
 
 > Safe re-runs: Every script that writes output files will automatically back up any existing file with a timestamped suffix before writing, so re-running the pipeline never silently overwrites previous results.
 
@@ -299,6 +302,7 @@ train_embedding_classifier.py   # Classifier training on cached embeddings
 biomedclip_classifier.py        # BiomedCLIP baseline wrapper
 balanced_accuracy.py            # Balanced accuracy computation (10-trial)
 analyze_failure_themes.py       # Failure theme analysis on shared hard cases
+plot_umap.py                    # UMAP visualization of embedding spaces
 medgemma_prompt_ablation.py     # MedGemma prompt/decoding ablation
 run_pathology_anti_bias_ablation.py  # Anti-bias prompt ablation
 

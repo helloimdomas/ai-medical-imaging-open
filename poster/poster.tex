@@ -21,23 +21,18 @@
 
 %%% COLUMN 1 %%%
 
-\section*{Abstract}
-How well do medical VLMs generalize to rare histopathology cases? We evaluate whether caption-based MedGemma can classify melanoma vs.\ nevus on 913 Open-MELON histopathology images, and benchmark it against embedding-based classifiers (BiomedCLIP, MedSigLIP).
-
+\section*{Introduction}
+This study evaluates how effectively medical vision-language models (VLMs) generalize to rare and diagnostically ambiguous histopathology cases, comparing the performance of caption-based MedGemma against embedding-based classifiers in classifying melanoma vs.\ nevus images.
 \section*{Methodology}
-\textbf{Dataset.} Open-MELON-VL-2.5K~[1]: 913~samples (597~melanoma, 316~benign). Ground truth labelling by keyword matching.
+We use Open-MELON-VL-2.5K, a histopathology dataset with 913~usable samples (597~melanoma, 316~benign). The dataset has no diagnosis labels, so we assign ground truth via Gemini~(gemma-3-27b-it) from caption text.
 
-\noindent\textbf{Caption cleaning.} Original captions contain non-visual metadata (staining, magnification, citations). Gemini rewrites each caption to retain only visual pathology and diagnosis, producing cleaned references for labeling and RAGAS evaluation.
-
-\noindent\textbf{Generative.} MedGemma-1.5-4B-it~[2] (Q4\_K\_M). Caption generation. Caption quality scored via RAGAS~[5] (Gemini-judged faithfulness and relevance vs.\ cleaned references). 4~prompts $\times$ 3~decoding settings (deterministic, mild sampling at $T{=}0.2$, moderate sampling at $T{=}0.5$).
-
-\noindent\textbf{Embeddings.} BiomedCLIP~[3] (512-d) and MedSigLIP~[4] (768-d) with LogReg, SVM, Random Forest.
-
-\noindent\textbf{Evaluation.} Each trial samples equal numbers per class. We report balanced accuracy averaged over 10~trials. Failure theme analysis on shared hard cases.
+MedGemma (4B, Q4\_K\_M quantized) generates captions for each image, classification is by keyword extraction from the output. We test 12~prompt/decoding configurations. As an additional comparison, we extract BiomedCLIP (512-d) and MedSigLIP (1152-d) embeddings and train LogReg, SVM, and Random Forest classifiers.
 
 %%% COLUMN 2 %%%
 
-\section*{Main Results}
+\section*{Results}
+
+MedGemma predicts ``melanoma'' for nearly every sample: 99.4\%~melanoma recall but only 0.7\%~nevus recall (50.6\%~balanced accuracy). Prompt ablation across all 12~configurations confirms this is a model-level limitation, not a prompt engineering problem.
 
 \begin{center}
 \begin{tikzpicture}
@@ -72,38 +67,27 @@ How well do medical VLMs generalize to rare histopathology cases? We evaluate wh
 \captionof{figure}{Balanced accuracy (10 trials). BC\,=\,BiomedCLIP, MS\,=\,MedSigLIP.}
 \end{center}
 
-\noindent\textbf{MedGemma bias.} Binary-choice prompt: 99.4\% melanoma recall but only 0.7\% nevus recall. The model predicts melanoma for nearly every sample. Balanced accuracy: 50.6\%.
+Embedding classifiers reach $\sim$74\%~balanced accuracy, confirming the images carry visual signal that MedGemma fails to use. Since MedGemma uses MedSigLIP as its vision encoder, and MedSigLIP + SVM matches BiomedCLIP + SVM, the failure is in language generation, not the visual backbone.
 
-\noindent\textbf{Caption quality.} The open prompt scores 0.15 faithfulness / 0.23 relevance; the binary-choice prompt improves to 0.44 / 0.57, but still indicates only partial alignment with reference pathology.
+Both embedding models fail on the same 35~diagnostically ambiguous cases (Spitz tumors, desmoplastic melanomas, etc.) that challenge even expert dermatopathologists, suggesting a performance ceiling set by genuine morphological ambiguity.
 
 \begin{center}
-\includegraphics[width=\linewidth]{umap_medsiglip.pdf}
+\includegraphics[width=0.7\linewidth, height=5cm]{umap_medsiglip.pdf}
 \vspace{-0.9em}
-\captionof{figure}{UMAP projection of MedSigLIP embeddings. Some separation between nevus and melanoma clusters is visible, but far from clean. Spitz tumor embeddings scatter across melanoma-dense regions, showing their features are indistinguishable from melanoma.}
+\captionof{figure}{UMAP of MedSigLIP embeddings. Nevus and melanoma only slightly separate, but Spitz tumors scatter across melanoma-dense regions.}
 \end{center}
 
 %%% COLUMN 3 %%%
 
 \section*{Discussion}
-\begin{itemize}\setlength{\itemsep}{1pt}\setlength{\parskip}{0pt}
-\item MedGemma fails to generalize: melanoma bias persists across all prompt configurations tested.
-\item We identified 35 cases where both BiomedCLIP and MedSigLIP SVMs fail. These concentrate in diagnostically challenging subtypes from both directions: benign lesions that mimic malignancy (Spitz tumors, cellular blue nevi) and melanomas that defy typical appearance (in-situ, mucosal, desmoplastic). These are cases that challenge even expert dermatopathologists, suggesting the models have reached a performance ceiling set by genuine morphological ambiguity.
-\item Labels extracted by Gemini from caption text, not from expert pathologist annotation, label noise is possible.
-\end{itemize}
+MedGemma has likely never seen benign melanocytic histopathology during training, so it associates any melanocytic features with melanoma. This explains the near-universal melanoma prediction.
 
-\section*{Conclusion}
-\fbox{\parbox{0.92\linewidth}{\centering\small\bfseries%
-MedGemma does not generalize well. It overcalls melanoma on benign lesions regardless of prompt, prioritizing sensitivity over specificity.}}
+\vspace{0.3em}
+Labels derived from caption text via Gemini rather than expert annotation may also contribute noise to these results.
 
-\begin{thebibliography}{9}
-{\small
-\bibitem{openmelon} Han et al.\ (2024). Open-MELON-VL-2.5K.
-\bibitem{medgemma} Google (2024). MedGemma.
-\bibitem{biomedclip} Zhang et al.\ (2023). BiomedCLIP. \textit{arXiv:2303.00915}.
-\bibitem{medsiglip} Hamamci et al.\ (2024). MedSigLIP.
-\bibitem{ragas} Es et al.\ (2023). RAGAS. \textit{arXiv:2309.15217}.
-}
-\end{thebibliography}
+\vspace{0.3em}
+Future work should target fine-tuning on labeled melanoma histopathology, testing the larger 27B variant, and evaluating MedGemma on domains where it has direct training data (e.g.\ colon pathology, chest X-rays).
+
 
 \end{multicols}
 \end{document}
