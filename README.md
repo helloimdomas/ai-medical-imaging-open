@@ -283,7 +283,7 @@ uv run python plot_umap.py
 
 All final results are pre-computed in `results/`. Steps 2–5 require model downloads and API keys (in `.env`). They will not run without setting the keys and we cannot put private keys in cloud.
 
-> Safe re-runs: Every script that writes output files will automatically back up any existing file with a timestamped suffix before writing, so re-running the pipeline never silently overwrites previous results.
+> Safe re-runs: Every script that writes output files will automatically back up any existing file with a timestamped suffix (e.g. `captions_20250417_143000.jsonl`) before writing, so re-running the pipeline never silently overwrites previous results. Steps 2 and 3 resume from where they left off by default — use `--fresh` to back up existing outputs and start from scratch.
 
 ---
 

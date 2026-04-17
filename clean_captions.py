@@ -13,6 +13,7 @@ Setup:
 
 import json, time, os, argparse, re
 from pathlib import Path
+from utils import backup_if_exists
 
 # CONFIG 
 MODEL = "gemma-3-27b-it"
@@ -140,6 +141,7 @@ def main():
         "--output",
         help="Custom output JSONL path",
     )
+    parser.add_argument("--fresh", action="store_true", help="Back up existing output and start from scratch")
     args = parser.parse_args()
     
     api_key = args.api_key or API_KEY
@@ -180,6 +182,9 @@ def main():
     if idx_data is not None:
         mel_set = set(idx_data["melanoma"])
         label_of = {i: "melanoma" if i in mel_set else "nevus" for i in target_indices}
+
+    if args.fresh:
+        backup_if_exists(output_file)
 
     done = load_completed(output_file)
     remaining = len([i for i in target_indices if i not in done])

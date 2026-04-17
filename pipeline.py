@@ -32,6 +32,8 @@ from datetime import datetime
 
 import yaml
 
+from utils import backup_if_exists, image_to_base64
+
 # === CONFIG ===
 SCRIPT_DIR = Path(__file__).parent
 CONFIG_FILE = SCRIPT_DIR / "configs" / "prompts.yaml"
@@ -83,8 +85,6 @@ def load_cleaned_captions():
                 "original": entry.get("original", ""),
             }
     return captions
-
-from utils import image_to_base64
 
 
 def strip_confidence(caption: str) -> str:
@@ -350,7 +350,7 @@ def print_progress(results: dict, total: int, prompt_id: str):
     )
 
 
-def run_prompt(prompt_id: str, prompt_text: str, target_indices: list, melanoma_set: set, dataset, cleaned_captions: dict):
+def run_prompt(prompt_id: str, prompt_text: str, target_indices: list, melanoma_set: set, dataset, cleaned_captions: dict, fresh: bool = False):
     """Run full pipeline for one prompt."""
     print(f"\n{'='*60}")
     print(f"RUNNING: {prompt_id}")
@@ -365,6 +365,10 @@ def run_prompt(prompt_id: str, prompt_text: str, target_indices: list, melanoma_
     
     caption_file = caption_dir / "captions.jsonl"
     eval_file = result_dir / "eval_live.jsonl"
+
+    if fresh:
+        backup_if_exists(caption_file)
+        backup_if_exists(eval_file)
 
     # Load already done
     done_indices = load_done_indices(caption_file)
@@ -453,6 +457,7 @@ def main():
     parser = argparse.ArgumentParser(description="Parallel caption generation and evaluation pipeline")
     parser.add_argument("--prompt-id", help="Run specific prompt only")
     parser.add_argument("-n", type=int, default=-1, help="Process only first N images")
+    parser.add_argument("--fresh", action="store_true", help="Back up existing outputs and start from scratch")
     args = parser.parse_args()
 
     # Load config and indices
@@ -484,7 +489,7 @@ def main():
         if pid not in prompts:
             print(f"Unknown prompt: {pid}")
             continue
-        run_prompt(pid, prompts[pid]["prompt"], all_indices, melanoma_set, dataset, cleaned_captions)
+        run_prompt(pid, prompts[pid]["prompt"], all_indices, melanoma_set, dataset, cleaned_captions, fresh=args.fresh)
 
     print("\n" + "="*60)
     print("ALL PROMPTS COMPLETE")
