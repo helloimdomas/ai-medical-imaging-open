@@ -65,12 +65,15 @@ Two prompts were evaluated. Full prompt text in [`configs/prompts.yaml`](configs
 - Open (baseline): *"You are a pathologist examining a biopsy. Describe the key histological features [...] Provide your best guess for the diagnosis and your certainty level."*
 - Binary choice: *"You are a pathologist examining a biopsy. This lesion is either MELANOMA or a BENIGN NEVUS. [...] State your diagnosis."*
 
-| Prompt Type | Accuracy | Sensitivity | Specificity | Faithfulness | Relevance |
-|---|---|---|---|---|---|
-| Open (baseline) | 8.7% | 10.5% | 5.0% | 0.15 | 0.23 |
-| Binary choice | 67.0% | 99.4% | 0.7% | 0.44 | 0.57 |
+| Prompt Type | Accuracy | Bal. Accuracy | Sensitivity | Specificity | Faithfulness | Relevance |
+|---|---|---|---|---|---|---|
+| Open (baseline) | 8.7% | 7.8% | 10.5% | 5.0% | 0.15 | 0.23 |
+| Binary choice | 67.0% | 50.6% | 99.4% | 0.7% | 0.44 | 0.57 |
+
+Raw accuracy is misleading here: 65% of samples are melanoma (597/913), so always predicting "melanoma" would score ~65% accuracy. The binary prompt's 67% is barely above that baseline. Balanced accuracy (average of sensitivity and specificity) shows the real picture: 50.0%, equivalent to a coin flip.
 
 - Accuracy: Proportion of correct predictions overall.
+- Balanced Accuracy: (Sensitivity + Specificity) / 2. Accounts for class imbalance.
 - Sensitivity (recall for melanoma): Of all true melanoma cases, how many did the model correctly identify?
 - Specificity (recall for nevus): Of all true nevus cases, how many did the model correctly identify?
 - Faithfulness: RAGAS score (0–1). Are claims in the generated caption factually supported by the reference?
