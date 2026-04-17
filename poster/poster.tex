@@ -1,162 +1,109 @@
-\documentclass[a1paper,25pt]{article}
-\usepackage[paper=a1paper,landscape=false,margin=2cm]{geometry}
-\usepackage[T1]{fontenc}
-\usepackage{graphicx,ifthen,color,pgf,multicol,calc}
-\usepackage{amsmath,amssymb,booktabs}
-\usepackage[charter]{mathdesign}
-\usepackage[sfdefault]{noto}
+\documentclass[a4paper,10pt]{article}
+\usepackage{tueposter2018}
 \usepackage[english]{babel}
+\usepackage{graphicx}
+\usepackage{booktabs}
 \usepackage{tikz}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepackage{titlesec}
+\titlespacing*{\section}{0pt}{1.5ex plus 0.3ex minus 0.2ex}{0.8ex plus 0.1ex}
 
-\pagestyle{empty}
-\setlength{\columnsep}{2cm}
-
-% TU/e colors
-\definecolor{tuescarlet}{RGB}{200,24,24}
-\definecolor{tuedarkblue}{RGB}{16,16,115}
-
-% Custom title
-\newcommand{\postertitle}[4]{%
-\begin{tikzpicture}[remember picture,overlay]
-\fill[tuescarlet] (current page.north west) rectangle ([yshift=-12cm]current page.north east);
-\node[anchor=north west, white, font=\fontsize{60}{72}\selectfont\bfseries] at ([xshift=3cm,yshift=-3cm]current page.north west) {#1};
-\node[anchor=north west, white, font=\fontsize{36}{44}\selectfont] at ([xshift=3cm,yshift=-6.5cm]current page.north west) {#2};
-\node[anchor=north west, white, font=\fontsize{28}{34}\selectfont] at ([xshift=3cm,yshift=-9cm]current page.north west) {#3};
-\node[anchor=south west, black, font=\fontsize{20}{24}\selectfont\bfseries] at ([xshift=3cm,yshift=1.5cm]current page.south west) {#4};
-\end{tikzpicture}
-}
+\title{Testing Medical VLM Generalization on Rare Cases}
+\subtitle{MedGemma, BiomedCLIP, and MedSigLIP on Open-MELON}
+\authors{Daan Merx, Domas Berulis, Roma den Otter}
+\department{Department of Biomedical Engineering}
 
 \begin{document}
-\postertitle{MedGemma vs BiomedCLIP for Melanoma Classification}{A Comparative Study on Vision-Language Models in Medical Imaging}{Team 5}{Department of Biomedical Engineering}
+\maketitle
 
-\vspace*{10cm}
+\begin{multicols}{2}
 
-\begin{multicols}{3}
+%%% COLUMN 1 %%%
 
-\section*{\fontsize{40}{48}\selectfont Abstract}
-\fontsize{24}{30}\selectfont
-We compare MedGemma (medical vision-language model) and BiomedCLIP (visual embeddings + classifiers) for melanoma vs nevus classification on 920 histopathology images from Open-MELON.
+\section*{Abstract}
+How well do medical VLMs generalize to rare histopathology cases? We evaluate whether caption-based MedGemma can classify melanoma vs.\ nevus on 913 Open-MELON histopathology images, and benchmark it against embedding-based classifiers (BiomedCLIP, MedSigLIP).
 
-\textbf{Key finding:} MedGemma's 68\% accuracy drops to 53\% (random chance) when classes are balanced. BiomedCLIP maintains 73\% regardless of balance.
+\section*{Methodology}
+\textbf{Dataset.} Open-MELON-VL-2.5K~[1]: 913~samples (597~melanoma, 316~benign). Ground truth labelling by keyword matching.
 
-\vspace{1cm}
-\section*{\fontsize{40}{48}\selectfont Methodology}
-\fontsize{24}{30}\selectfont
+\noindent\textbf{Caption cleaning.} Original captions contain non-visual metadata (staining, magnification, citations). Gemini rewrites each caption to retain only visual pathology and diagnosis, producing cleaned references for labeling and RAGAS evaluation.
 
-\textbf{Dataset:} Open-MELON-VL-2.5K\\
-920 melanoma/nevus cases (618 melanoma, 302 nevus)
+\noindent\textbf{Generative.} MedGemma-1.5-4B-it~[2] (Q4\_K\_M). Caption generation. Caption quality scored via RAGAS~[5] (Gemini-judged faithfulness and relevance vs.\ cleaned references). 4~prompts $\times$ 3~decoding settings (deterministic, mild sampling at $T{=}0.2$, moderate sampling at $T{=}0.5$).
 
-\textbf{MedGemma:} Generate captions $\rightarrow$ Extract diagnosis via keywords $\rightarrow$ RAGAS evaluation
+\noindent\textbf{Embeddings.} BiomedCLIP~[3] (512-d) and MedSigLIP~[4] (768-d) with LogReg, SVM, Random Forest.
 
-\textbf{BiomedCLIP:} Extract 512-dim embeddings $\rightarrow$ Zero-shot or supervised classifiers
+\noindent\textbf{Evaluation.} Each trial samples equal numbers per class. We report balanced accuracy averaged over 10~trials. Failure theme analysis on shared hard cases.
 
-\textbf{Balanced Evaluation:} Equal sampling from each class, averaged over 10 trials
+%%% COLUMN 2 %%%
 
-\vspace{1cm}
-\section*{\fontsize{40}{48}\selectfont Results}
-\fontsize{24}{30}\selectfont
+\section*{Main Results}
 
-\textbf{Accuracy (Original vs Balanced):}
-\vspace{0.5cm}
+\begin{center}
+\begin{tikzpicture}
+\begin{axis}[
+    ybar, bar width=5pt,
+    width=\linewidth, height=4.5cm,
+    ylabel={Balanced Acc.\ (\%)},
+    ylabel style={font=\scriptsize},
+    ymin=40, ymax=82, ytick={40,50,60,70,80},
+    y tick label style={font=\tiny},
+    symbolic x coords={MedGemma, {BC+LR}, {BC+SVM}, {BC+RF}, {MS+LR}, {MS+SVM}, {MS+RF}},
+    xtick=data,
+    x tick label style={rotate=35, anchor=east, font=\tiny},
+    nodes near coords,
+    every node near coord/.append style={font=\tiny, /pgf/number format/fixed, /pgf/number format/precision=1},
+    error bars/y dir=both,
+    error bars/y explicit,
+    enlarge x limits=0.12,
+]
+\addplot+[fill=tuescarlet!80, draw=tuescarlet] coordinates {
+    (MedGemma, 50.6) +- (0, 3.0)
+    ({BC+LR}, 73.1) +- (0, 3.0)
+    ({BC+SVM}, 73.9) +- (0, 2.9)
+    ({BC+RF}, 72.6) +- (0, 2.5)
+    ({MS+LR}, 71.4) +- (0, 4.1)
+    ({MS+SVM}, 74.0) +- (0, 3.3)
+    ({MS+RF}, 71.6) +- (0, 5.2)
+};
+\end{axis}
+\end{tikzpicture}%
+\vspace{-0.9em}
+\captionof{figure}{Balanced accuracy (10 trials). BC\,=\,BiomedCLIP, MS\,=\,MedSigLIP.}
+\end{center}
 
-{\fontsize{22}{28}\selectfont
-\begin{tabular}{lcc}
-\toprule
-\textbf{Model} & \textbf{Original} & \textbf{Balanced} \\
-\midrule
-MedGemma & 68.4\% & \textbf{53.2\%} \\
-BiomedCLIP + RF & 73.9\% & \textbf{73.2\%} \\
-BiomedCLIP + SVM & 71.2\% & \textbf{73.6\%} \\
-\bottomrule
-\end{tabular}
+\noindent\textbf{MedGemma bias.} Binary-choice prompt: 99.4\% melanoma recall but only 0.7\% nevus recall. The model predicts melanoma for nearly every sample. Balanced accuracy: 50.6\%.
+
+\noindent\textbf{Caption quality.} The open prompt scores 0.15 faithfulness / 0.23 relevance; the binary-choice prompt improves to 0.44 / 0.57, but still indicates only partial alignment with reference pathology.
+
+\begin{center}
+\includegraphics[width=\linewidth]{umap_medsiglip.pdf}
+\vspace{-0.9em}
+\captionof{figure}{UMAP projection of MedSigLIP embeddings. Some separation between nevus and melanoma clusters is visible, but far from clean. Spitz tumor embeddings scatter across melanoma-dense regions, showing their features are indistinguishable from melanoma.}
+\end{center}
+
+%%% COLUMN 3 %%%
+
+\section*{Discussion}
+\begin{itemize}\setlength{\itemsep}{1pt}\setlength{\parskip}{0pt}
+\item MedGemma fails to generalize: melanoma bias persists across all prompt configurations tested.
+\item We identified 35 cases where both BiomedCLIP and MedSigLIP SVMs fail. These concentrate in diagnostically challenging subtypes from both directions: benign lesions that mimic malignancy (Spitz tumors, cellular blue nevi) and melanomas that defy typical appearance (in-situ, mucosal, desmoplastic). These are cases that challenge even expert dermatopathologists, suggesting the models have reached a performance ceiling set by genuine morphological ambiguity.
+\item Labels extracted by Gemini from caption text, not from expert pathologist annotation, label noise is possible.
+\end{itemize}
+
+\section*{Conclusion}
+\fbox{\parbox{0.92\linewidth}{\centering\small\bfseries%
+MedGemma does not generalize well. It overcalls melanoma on benign lesions regardless of prompt, prioritizing sensitivity over specificity.}}
+
+\begin{thebibliography}{9}
+{\small
+\bibitem{openmelon} Han et al.\ (2024). Open-MELON-VL-2.5K.
+\bibitem{medgemma} Google (2024). MedGemma.
+\bibitem{biomedclip} Zhang et al.\ (2023). BiomedCLIP. \textit{arXiv:2303.00915}.
+\bibitem{medsiglip} Hamamci et al.\ (2024). MedSigLIP.
+\bibitem{ragas} Es et al.\ (2023). RAGAS. \textit{arXiv:2309.15217}.
 }
-
-\vspace{1cm}
-\textbf{MedGemma Diagnosis:}
-\vspace{0.5cm}
-
-{\fontsize{22}{28}\selectfont
-\begin{tabular}{lc}
-\toprule
-\textbf{Metric} & \textbf{Value} \\
-\midrule
-Melanoma correctly ID'd & 99.4\% \\
-Nevus correctly ID'd & \textbf{0.7\%} \\
-Hallucinated diagnoses & 83\% \\
-\bottomrule
-\end{tabular}
-}
-
-\vspace{0.5cm}
-MedGemma hallucinated ``lymphoma'' (292 cases) and ``carcinoma'' (196 cases).
-
-\columnbreak
-
-\section*{\fontsize{40}{48}\selectfont Failure Analysis}
-\fontsize{24}{30}\selectfont
-
-\textbf{BiomedCLIP failures} are interpretable:
-\begin{itemize}
-\item Atypical nevi misclassified as melanoma
-\item Spindle cell nevi look similar to melanoma
-\item In-situ melanomas lack invasive features
-\end{itemize}
-
-\textbf{MedGemma failures} are systemic:
-\begin{itemize}
-\item Defaults to ``melanoma'' regardless of content
-\item No ability to distinguish visual features
-\item Only 2/302 nevus samples correctly identified
-\end{itemize}
-
-\vspace{1cm}
-\section*{\fontsize{40}{48}\selectfont Critical Discussion}
-\fontsize{24}{30}\selectfont
-
-\textbf{Why MedGemma fails:}
-\begin{itemize}
-\item Insufficient melanoma/nevus training data
-\item Captioning $\neq$ classification objective
-\item 4B model too small for medical reasoning
-\end{itemize}
-
-\textbf{Why BiomedCLIP succeeds:}
-\begin{itemize}
-\item Contrastive training on 15M medical pairs
-\item Embeddings for semantic discrimination
-\item Supervised classifier learns decision boundary
-\end{itemize}
-
-\columnbreak
-
-\section*{\fontsize{40}{48}\selectfont Conclusion}
-\fontsize{24}{30}\selectfont
-
-\textbf{MedGemma provides no diagnostic value} for melanoma classification:
-\begin{itemize}
-\item Apparent accuracy is artifact of class imbalance
-\item Hallucinates diagnoses in 83\% of cases
-\item Correctly identifies only 0.7\% of nevus
-\end{itemize}
-
-\textbf{BiomedCLIP achieves genuine 73\% accuracy} that holds under balanced evaluation.
-
-\vspace{0.5cm}
-\fbox{\parbox{0.9\linewidth}{\centering\fontsize{28}{34}\selectfont\bfseries
-For medical image classification,\\embedding-based approaches outperform\\caption-based VLMs.
-}}
-
-\vspace{1cm}
-\section*{\fontsize{40}{48}\selectfont References}
-\fontsize{20}{26}\selectfont
-
-[1] Google (2024). MedGemma: Open Medical AI Models.
-
-[2] Zhang et al. (2023). BiomedCLIP: A Multimodal Biomedical Foundation Model.
-
-[3] Han et al. (2024). Open-MELON-VL-2.5K Dataset.
-
-[4] Es et al. (2023). RAGAS: Automated Evaluation. arXiv:2309.15217.
+\end{thebibliography}
 
 \end{multicols}
 \end{document}

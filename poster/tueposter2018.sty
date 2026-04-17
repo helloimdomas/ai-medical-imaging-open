@@ -91,7 +91,7 @@
 
 \ifx\narrowmargins\undefined  % Standard margins
 \setlength{\logobarheight}{3.7cm}
-\setlength{\titlebarheight}{3.8cm}
+\setlength{\titlebarheight}{5.0cm}
 \setlength{\logoheight}{2.3cm}
 \setlength{\companylogoheight}{1.8cm}
 \setlength{\marginx}{1.7cm}
@@ -110,7 +110,7 @@
 \setlength{\logoy}{\logobarheight/2}
 \setlength{\titletopmargin}{0.5cm}
 \fi
-\geometry{text={21cm-2\marginx-0.02cm,20cm}}
+\geometry{text={21cm-2\marginx-0.02cm,19.5cm}, top=9.2cm}
 
 
 \newcommand{\inserttitle}{}
@@ -187,7 +187,7 @@
 %        \pgfusepath{fill}
 
         % Department or Service
-        \pgftext[at=\pgfpoint{\marginx}{\marginy+0.4cm},left,center]{%
+        \pgftext[at=\pgfpoint{\marginx}{0.3cm},left,center]{%
                     \color{black}\normalfont\fontsize{10}{10}\selectfont\bfseries%
         \dept
         }
