@@ -23,7 +23,7 @@
 %%% COLUMN 1 %%%
 
 \section*{Introduction}
-This study evaluates how effectively medical vision-language models (VLMs) generalize to rare and diagnostically ambiguous histopathology cases, comparing the performance of caption-based MedGemma against embedding-based classifiers in classifying melanoma vs.\ nevus images.
+Accurate histopathological classification of melanocytic lesions remains challenging even for expert dermatopathologists, with rare subtypes like Spitz tumors frequently mimicking melanoma. This study evaluates how effectively medical vision-language models (VLMs) generalize to these diagnostically ambiguous cases, comparing caption-based MedGemma against embedding-based classifiers on melanoma vs.\ nevus classification.
 \section*{Methodology}
 We use Open-MELON-VL-2.5K, a histopathology dataset with 913~usable samples (597~melanoma, 316~benign). The dataset has no diagnosis labels, so we assign ground truth via Gemini~(gemma-3-27b-it) from caption text.
 
