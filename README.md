@@ -4,9 +4,9 @@
 
 **Hypothesis:** Medical VLMs will perform better on frequently seen histopathology cases from training than on rare cases, and their accuracy will degrade on diagnostically ambiguous subtypes underrepresented in training data.
 
-**Why melanoma vs. nevus?** Melanoma is heavily represented in medical training data because of its clinical importance, while benign nevi (moles) and rare subtypes like Spitz tumors are far less common. This makes melanoma vs. nevus classification an ideal test case: if a VLM has learned a bias toward melanoma from its training data, it will over-diagnose melanoma and miss benign cases — especially rare ones that share morphological features with malignancy.
+**Why melanoma vs. nevus?** Melanoma is heavily represented in medical training data because of its clinical importance, while benign nevi (moles) and rare subtypes like Spitz tumors are far less common. This makes melanoma vs. nevus classification an ideal test case: if a VLM has learned a bias toward melanoma from its training data, it will over-diagnose melanoma and miss benign cases, especially rare ones that share morphological features with malignancy.
 
-**Main finding:** MedGemma predicts "melanoma" for nearly every sample (99.4% sensitivity, 0.7% specificity), achieving only 50.6% balanced accuracy — even after testing 12 prompt/decoding configurations. Embedding-based classifiers reach ~74% balanced accuracy, both approaches fail on the same 35 diagnostically ambiguous cases (Spitz tumors, desmoplastic melanoma, cellular blue nevi), suggesting a performance ceiling set by genuine morphological ambiguity.
+**Main finding:** MedGemma predicts "melanoma" for nearly every sample (99.4% sensitivity, 0.7% specificity), achieving only 50.6% balanced accuracy, even after testing 12 prompt/decoding configurations. Embedding-based classifiers reach ~74% balanced accuracy, both approaches fail on the same 35 diagnostically ambiguous cases (Spitz tumors, desmoplastic melanoma, cellular blue nevi), suggesting a performance ceiling set by genuine morphological ambiguity.
 
 **Authors:** Daan Merx, Domas Berulis, Roma den Otter
 
@@ -27,14 +27,14 @@
 | Contains both keywords | **excluded** (ambiguous) | ~110 |
 | Contains neither keyword | **excluded** (other condition) | ~1,429 |
 
-This yields 913 usable samples: 597 melanoma and 316 benign (263 nevus + 53 Spitz tumors, classified as benign).
+The result is 913 usable samples: 597 melanoma and 316 benign (263 nevus + 53 Spitz tumors, classified as benign).
 
 **Stage 2 — Gemini label verification:** Each caption is sent to Gemini (gemma-3-27b-it) which assigns a conservative diagnosis label (`MELANOMA`, `NEVUS`, `SPITZ_TUMOR`, `DIFFERENTIAL`, or `OTHER`) based on the full caption context. This second pass validates the keyword-based selection and resolves edge cases where keyword context alone is insufficient. These Gemini-assigned labels are what the embedding classifiers use.
 
 **Example of an excluded ambiguous caption:**
 > *"Histopathological image showing nevus cells from Case 1 [...] where melanoma developed and spread rapidly during pregnancy."*
 
-This mentions both "nevus cells" and "melanoma" because melanoma arose near existing nevus tissue — including it would contaminate the binary benchmark.
+The caption mentions both "nevus cells" and "melanoma" because melanoma arose near existing nevus tissue. Including it would contaminate the binary benchmark.
 
 ### Caption Cleaning
 
@@ -76,27 +76,21 @@ Two prompts were evaluated. Full prompt text in [`configs/prompts.yaml`](configs
 - Faithfulness: RAGAS score (0–1). Are claims in the generated caption factually supported by the reference?
 - Relevance: RAGAS score (0–1). Does the generated caption cover the same medical findings as the reference?
 
-The open prompt produces vague captions that lack diagnostic keywords (faithfulness 0.15). The binary prompt forces a choice but the model defaults to "melanoma" for nearly every sample — 99.4% sensitivity at the cost of 0.7% specificity.
+The open prompt produces vague captions that lack diagnostic keywords (faithfulness 0.15). The binary prompt forces a choice but the model defaults to "melanoma" for nearly every sample: 99.4% sensitivity at the cost of 0.7% specificity.
 
-**Example: Open prompt completely misidentifies tissue (index 3):**
+For example, on index 3 (uveal melanoma), the open prompt produces a completely wrong description:
 
-Ground truth: *"Dense cell proliferation composed of small and medium fusiform cells with evident pigment production. Uveal melanoma."*
+> Ground truth: *"Dense cell proliferation composed of small and medium fusiform cells with evident pigment production. Uveal melanoma."*
+>
+> MedGemma: *"The image shows a dense infiltrate of lymphocytes, predominantly T cells, surrounding a central area of necrosis. There is also evidence of reactive fibroblastic proliferation. Lymphocytic infiltrate with necrosis. High."*
 
-MedGemma (open prompt): *"The image shows a dense infiltrate of lymphocytes, predominantly T cells, surrounding a central area of necrosis. There is also evidence of reactive fibroblastic proliferation. Lymphocytic infiltrate with necrosis. High."*
+The model describes lymphocytes instead of melanocytes and diagnoses necrosis instead of melanoma. A complete misidentification (see [`captions/baseline/captions.jsonl`](captions/baseline/captions.jsonl), index 3).
 
-The model describes lymphocytes instead of melanocytes and diagnoses necrosis instead of melanoma — a complete misidentification. See [`captions/baseline/captions.jsonl`](captions/baseline/captions.jsonl), index 3.
-
-**Example: Binary prompt misclassifying a benign nevus (index 43):**
-
-Cleaned ground truth: *"Lentiginous intraepidermal proliferation of melanocytes and a benign intradermal nevus."*
-
-MedGemma (binary prompt): *"Melanoma. High. The lesion shows atypical melanocytes infiltrating the dermis."*
-
-The model confidently calls this benign nevus "melanoma." See [`captions/binary_choice/captions.jsonl`](captions/binary_choice/captions.jsonl), index 43.
+The binary prompt has the opposite problem. Take index 43, a benign intradermal nevus. Ground truth: *"Lentiginous intraepidermal proliferation of melanocytes and a benign intradermal nevus."* MedGemma responds: *"Melanoma. High. The lesion shows atypical melanocytes infiltrating the dermis."* It confidently calls a benign nevus "melanoma" (see [`captions/binary_choice/captions.jsonl`](captions/binary_choice/captions.jsonl), index 43).
 
 ### Step 2: Embedding Classifiers
 
-Are the images themselves just too hard to classify, or is MedGemma specifically failing? To answer this, we extracted BiomedCLIP embeddings (512-d) and trained supervised classifiers (LogReg, SVM, Random Forest). This reached ~74% balanced accuracy — confirming the images carry enough visual signal.
+Are the images themselves just too hard to classify, or is MedGemma specifically failing? To answer this, we extracted BiomedCLIP embeddings (512-d) and trained supervised classifiers (LogReg, SVM, Random Forest). The classifiers reached ~74% balanced accuracy, so the images do carry enough visual signal.
 
 The course instructor then suggested adding MedSigLIP (1152-d embeddings), since MedGemma internally uses MedSigLIP as its vision encoder. If MedGemma's own backbone can separate the classes via embeddings, the failure must be in MedGemma's language generation, not its visual understanding. MedSigLIP + SVM also reached ~74%.
 
@@ -114,7 +108,7 @@ Each trial draws a balanced subset of 632 images (all 316 benign + 316 randomly 
 
 *Full results in [`results/balanced_accuracy.json`](results/balanced_accuracy.json).*
 
-Excluding Spitz tumors, MedSigLIP + SVM improves to 76.4% (see [`results/balanced_accuracy_exclude_spitz.json`](results/balanced_accuracy_exclude_spitz.json)), confirming that Spitz cases are a primary source of classification difficulty.
+Excluding Spitz tumors, MedSigLIP + SVM improves to 76.4% (see [`results/balanced_accuracy_exclude_spitz.json`](results/balanced_accuracy_exclude_spitz.json)). Spitz cases are a primary source of classification difficulty.
 
 ### Step 3: Prompt × Decoding Ablation
 
@@ -138,7 +132,7 @@ Three decoding settings: deterministic (T=0), mild sampling (T=0.2), moderate sa
 
 *M = melanoma, N = nevus, U = unknown. All target samples are nevus, so correct = predicted nevus. \*35 mixed-label samples.*
 
-No configuration exceeded 10% accuracy. The melanoma bias persists across all prompt formulations and decoding temperatures. We also tested a structured anti-bias prompt that forces the model to list benign features before malignant ones and instructs it not to diagnose melanoma unless multiple malignant features are present ([`configs/pathology_anti_bias_ablation.yaml`](configs/pathology_anti_bias_ablation.yaml)). This flipped the bias entirely — MedGemma went from predicting nearly everything as melanoma to predicting nearly everything as benign — confirming that prompt engineering cannot fix the underlying limitation.
+No configuration exceeded 10% accuracy. The melanoma bias persists across all prompt formulations and decoding temperatures. We also tested a structured anti-bias prompt that forces the model to list benign features before malignant ones and instructs it not to diagnose melanoma unless multiple malignant features are present ([`configs/pathology_anti_bias_ablation.yaml`](configs/pathology_anti_bias_ablation.yaml)). The bias flipped entirely: MedGemma went from predicting nearly everything as melanoma to predicting nearly everything as benign. Prompt engineering cannot fix the underlying limitation.
 
 ### Step 4: Why Do Both Models Hit the Same ~74% Ceiling?
 
@@ -165,35 +159,19 @@ Top failure themes among the 35 shared hard cases:
 
 *Full theme breakdown in [`results/failure_theme_analysis.json`](results/failure_theme_analysis.json).*
 
-**Example: Spitz tumor both models call melanoma (index 1737):**
+Some concrete examples from the 35 shared failures:
 
-Caption: *"Histopathology of a Spitz tumor demonstrating marked tumor asymmetry [...] identified as a risk-associated histopathological feature."*
+- Index 1737 (Spitz tumor): *"Histopathology of a Spitz tumor demonstrating marked tumor asymmetry [...] identified as a risk-associated histopathological feature."* Both models predict melanoma. Spitz tumors share morphological features with melanoma (asymmetry, atypical spindle cells), making them a known diagnostic challenge even for expert dermatopathologists.
 
-Both BiomedCLIP-SVM and MedSigLIP-SVM predict "melanoma." Spitz tumors share morphological features with melanoma (asymmetry, atypical spindle cells), making them a known diagnostic challenge even for expert dermatopathologists.
+- Index 1845 (desmoplastic melanoma): *"Histopathology showing desmoplastic melanoma, characterized by atypical spindle cells embedded in a dense fibrous matrix."* Both models predict benign. Desmoplastic melanoma lacks the typical melanoma appearance. Its spindle cells in fibrous stroma resemble a scar or fibromatosis rather than a melanocytic tumor.
 
-**Example: Desmoplastic melanoma both models miss (index 1845):**
-
-Caption: *"Histopathology showing desmoplastic melanoma, characterized by atypical spindle cells embedded in a dense fibrous matrix."*
-
-Both models predict "benign." Desmoplastic melanoma lacks the typical melanoma appearance — its spindle cells in fibrous stroma resemble a scar or fibromatosis rather than a melanocytic tumor.
-
-**Example: BiomedCLIP fails, MedSigLIP succeeds (index 1781):**
-
-Caption: *"Late-onset lentiginous and nested melanoma [...] a chaotic architecture with variably sized nests and confluent single nevoid melanocytes."*
-
-BiomedCLIP calls it "benign" while MedSigLIP correctly identifies it as melanoma.
-
-**Example: MedSigLIP fails, BiomedCLIP succeeds (index 941):**
-
-Caption: *"Acrosyringial and periductal distribution of the melanocytic neoplasm [...] acral compound melanocytic nevus with congenital features."*
-
-MedSigLIP calls it "melanoma" while BiomedCLIP correctly identifies it as benign.
+The models also disagree on some cases. At index 1781, a lentiginous melanoma with *"chaotic architecture with variably sized nests,"* BiomedCLIP calls it benign while MedSigLIP gets it right. Conversely, at index 941, an acral compound nevus, MedSigLIP calls it melanoma while BiomedCLIP correctly identifies it as benign.
 
 Full case-by-case analysis in [`results/failure_theme_analysis.json`](results/failure_theme_analysis.json).
 
 ### Step 5: UMAP Visualization
 
-The course instructor suggested UMAP projections to visualize the embedding space. These show partial separation between nevus and melanoma clusters, but Spitz tumor embeddings scatter across melanoma-dense regions — their features are morphologically indistinguishable from melanoma. This explains the ~74% ceiling: it is set by genuine morphological ambiguity in these rare subtypes.
+The course instructor suggested UMAP projections to visualize the embedding space. These show partial separation between nevus and melanoma clusters, but Spitz tumor embeddings scatter across melanoma-dense regions. Their features are morphologically indistinguishable from melanoma. The ~74% ceiling is set by genuine morphological ambiguity in these rare subtypes.
 
 See [`poster/umap_medsiglip.png`](poster/umap_medsiglip.png) and [`poster/umap_biomedclip.png`](poster/umap_biomedclip.png).
 
@@ -209,9 +187,9 @@ The [MedGemma model card](https://huggingface.co/google/medgemma-4b-it) and [tec
 - Pathology: TCGA, CAMELYON, plus proprietary datasets covering colon, prostate, lymph nodes, and lung histopathology
 - Dermatology: PAD-UFES-20, SCIN — clinical/dermatoscopic surface photos, not histopathology slides
 
-Melanoma histopathology falls in a gap between these two training streams: it is histopathology (like the pathology data) but of melanocytic skin tissue (like the dermatology data). MedGemma has likely never seen benign melanocytic histopathology during training, so it associates any melanocytic features with melanoma — the dominant condition in its dermatology training. This explains the near-universal melanoma prediction (99.4% sensitivity, 0.7% specificity).
+Melanoma histopathology falls in a gap between these two training streams: it is histopathology (like the pathology data) but of melanocytic skin tissue (like the dermatology data). MedGemma has likely never seen benign melanocytic histopathology during training, so it associates any melanocytic features with melanoma (the dominant condition in its dermatology training). The near-universal melanoma prediction (99.4% sensitivity, 0.7% specificity) follows directly from this gap.
 
-The model card explicitly states: *"For medical image-based applications that do not involve text generation, such as data-efficient classification [...] the MedSigLIP image encoder is recommended"* — directly validating our finding that MedSigLIP embeddings + SVM outperform MedGemma's text generation pipeline.
+The model card explicitly states: *"For medical image-based applications that do not involve text generation, such as data-efficient classification [...] the MedSigLIP image encoder is recommended"* which directly validates our finding that MedSigLIP embeddings + SVM outperform MedGemma's text generation pipeline.
 
 ### What We Could Have Done Better
 
@@ -222,14 +200,14 @@ The model card explicitly states: *"For medical image-based applications that do
 
 ### Future Research Directions
 
-**Improving the current approach:**
+**Improving on the current question:**
 
 1. Fine-tune MedGemma on labeled melanoma/nevus histopathology images. Instead of prompting the model zero-shot, additional training on task-specific examples could teach it the melanoma-vs-nevus distinction it currently lacks.
-2. Evaluate MedGemma 27B (multimodal) to determine if the larger model overcomes the melanoma bias — we used the 4B variant due to hardware constraints.
+2. Evaluate MedGemma 27B (multimodal) to determine if the larger model overcomes the melanoma bias (we used the 4B variant due to hardware constraints).
 
 **Extending to new questions:**
 
-3. Test MedGemma where it was trained: Run the same VLM-vs-embedding comparison on chest X-rays or colon pathology — domains where MedGemma has direct training data. If the VLM-vs-embedding gap closes in-domain, it confirms the modality gap hypothesis.
+3. Test MedGemma where it was trained: Run the same VLM-vs-embedding comparison on chest X-rays or colon pathology, domains where MedGemma has direct training data. If the VLM-vs-embedding gap closes in-domain, it confirms the modality gap hypothesis.
 4. Multi-class extension: Expand beyond binary melanoma/nevus to include basal cell carcinoma, squamous cell carcinoma, and dermatofibroma. Does the same dominant-class bias appear when more diagnosis classes are available?
 5. Other medical VLMs: Compare with histopathology-specific models to determine whether the melanoma bias is MedGemma-specific or a general limitation of VLMs on underrepresented histopathology domains.
 6. Clinical triage angle: MedGemma's 99.4% melanoma sensitivity could paradoxically be useful as a conservative pre-screening tool — if MedGemma says "benign," the prediction is almost certainly correct (given how rarely it predicts benign).
