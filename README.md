@@ -8,7 +8,7 @@
 
 **Main finding:** MedGemma predicts "melanoma" for nearly every sample (99.4% sensitivity, 0.7% specificity), achieving only 50.6% balanced accuracy — even after testing 12 prompt/decoding configurations. Embedding-based classifiers reach ~74% balanced accuracy, both approaches fail on the same 35 diagnostically ambiguous cases (Spitz tumors, desmoplastic melanoma, cellular blue nevi), suggesting a performance ceiling set by genuine morphological ambiguity.
 
-**Authors:** Daan Merx, Domas Berulis, Roma den Otter — Department of Biomedical Engineering, TU/e
+**Authors:** Daan Merx, Domas Berulis, Roma den Otter
 
 ---
 
@@ -284,6 +284,23 @@ uv run python plot_umap.py
 All final results are pre-computed in `results/`. Steps 2–5 require model downloads and API keys (in `.env`). They will not run without setting the keys and we cannot put private keys in cloud.
 
 > Safe re-runs: Every script that writes output files will automatically back up any existing file with a timestamped suffix before writing, so re-running the pipeline never silently overwrites previous results.
+
+---
+
+## References and Resources
+
+| Component | Paper / Docs | Model / Code | Used code from |
+|:--|:--|:--|:--|
+| Open-MELON-VL-2.5K | [Han et al., 2024](https://arxiv.org/abs/2504.14883) | [HuggingFace Dataset](https://huggingface.co/datasets/TieGenAI/Open-MELON-VL-2.5K) | — |
+| MedGemma | [Sellergren et al., 2025](https://arxiv.org/abs/2507.05201) | [HuggingFace Model](https://huggingface.co/google/medgemma-4b-it) | [Quick Start Colab](https://colab.research.google.com/github/google-health/medgemma/blob/main/notebooks/quick_start_with_hugging_face.ipynb) |
+| BiomedCLIP | [Zhang et al., 2024 (NEJM AI)](https://ai.nejm.org/doi/full/10.1056/AIoa2400640) | [HuggingFace Model](https://huggingface.co/microsoft/BiomedCLIP-PubMedBERT_256-vit_base_patch16_224) | [Example Notebook](https://aka.ms/biomedclip-example-notebook) |
+| MedSigLIP | [Sellergren et al., 2025](https://arxiv.org/abs/2507.05201) | [HuggingFace Model](https://huggingface.co/google/medsiglip-448) | [Quick Start Colab](https://colab.research.google.com/github/google-health/medsiglip/blob/main/notebooks/quick_start_with_hugging_face.ipynb) |
+| RAGAS | [Es et al., 2023](https://arxiv.org/abs/2309.15217) | [GitHub](https://github.com/explodinggradients/ragas) | [Quick Start](https://docs.ragas.io/en/stable/getstarted/quickstart/) |
+| UMAP | [McInnes & Healy, 2018](https://arxiv.org/abs/1802.03426) | [GitHub](https://github.com/lmcinnes/umap) | [Basic Usage](https://umap-learn.readthedocs.io/en/latest/basic_usage.html) |
+| Gemini (gemma-3-27b-it) | [Gemma 3 Report](https://storage.googleapis.com/deepmind-media/gemma/Gemma3Report.pdf) | [HuggingFace Model](https://huggingface.co/google/gemma-3-27b-it) | [Ollama](https://ollama.com/library/gemma3) |
+| scikit-learn classifiers | [scikit-learn docs](https://scikit-learn.org/stable/modules/svm.html) | — | [Classifier Comparison](https://scikit-learn.org/stable/auto_examples/classification/plot_classifier_comparison.html) |
+| Ollama | [ollama.com](https://ollama.com/) | [GitHub](https://github.com/ollama/ollama) | [Python Library](https://github.com/ollama/ollama-python) |
+| uv | [docs.astral.sh/uv](https://docs.astral.sh/uv/) | [GitHub](https://github.com/astral-sh/uv) | [Project Guide](https://docs.astral.sh/uv/guides/projects/) |
 
 ---
 
